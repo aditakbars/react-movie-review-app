@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css?family=Quicksand:400,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;700;800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fffaf000;
+}
+
+header {
+  display: inline;
+}
+
+nav {
+  background-color: #282f3a;
+  padding: 5px;
+  position: sticky;
+  z-index: 50;
+  top: 0;
+}
+
+nav li {
+  display: inline;
+  list-style-type: none;
+  margin-right: 20px;
+}
+
+nav a {
+  font-size: 18px;
+  font-weight: 555; 
+  text-decoration: none;
+  color: white;
+  transition: 0.5s;
+}
+
+nav a:hover {
+  color: rgb(0, 255, 51);
+  text-decoration: underline;
+}
+
+main {
+  background-color: #2f3845;
+  padding: 20px;
+  overflow: auto;
+  min-height: 100%;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  justify-content: flex-start;
+}
+
+.moviecard {
+  box-shadow: 0 2px 8px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  padding: 1.1em;
+  margin-top: 20px;
+  z-index: 5;
+  min-width: 330px;
+  margin-right: 1em;
+  margin-bottom: 2em;
+  transition: 0.3s;
+}
+
+.moviecard img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.moviecard p {
+  font-size: 1em;
+  text-align: center;
+}
+
+.moviecard:hover {
+  transform: scale(1.123);
+  animation-delay: 1s;
+  background-color: #8899aaba;
+}
+
+.movie-title {
+  text-align: center;
+}
+
+@media screen and (max-width: 1000px) {
+  h2, h3, h4, p {
+    font-size: smaller;
+  }
+
+  .movie-title {
+    font-size: large;
+  }
+
+  p {
+    font-size: 0.73em;
+  }
+}
