@@ -10,6 +10,8 @@ import Footer from '../components/Footer';
 
 const Home = () => {
     const [movies, setMovies] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -33,19 +35,50 @@ const Home = () => {
         fetchMovies();
     }, []);
 
+    const handleSearch = async () => {
+        try {
+            const response = await axios.get(
+                `https://api.themoviedb.org/3/search/movie?query=${searchQuery}&include_adult=true&api_key=68614c1e94153665aa5592b00e68c7ac`
+            );
+    
+            setSearchResults(response.data.results);
+        } catch (error) {
+            console.error('Error searching for movies:', error);
+        }
+    };
+
     return (
         <div>
         <NavBar/>
             <main>
-            <article>
+                <article>
 
-            <div className='content' id='reviews'>
+                <div className='content' id='reviews'>
 
-            <h1>Now Playing Movies</h1>
-            <MovieList movies={movies} />
+                <h1>Now Playing Movies</h1>
+                <MovieList movies={movies} />
 
-            </div>
-            </article>
+                {/* Search Input */}
+                <input
+                    type="text"
+                    placeholder="Search for a movie..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <div>
+                <button onClick={handleSearch}>Search</button>
+                </div>
+                
+                {/* Search Results */}
+                {searchResults.length > 0 && (
+                    <>
+                    <h2>Search Results</h2>
+                    <MovieList movies={searchResults} />
+                    </>
+                )}
+
+                </div>
+                </article>
             </main>
         <Footer/>
         </div>

@@ -1,11 +1,19 @@
 import React from "react";
-import Footer from "../components/Footer";
+import '../App.css';
+
+//components
+import MovieList from '../components/MovieList';
+import NavBar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 
-
-export default function review() {
+export default function Review() {
     return(
-        <Footer></Footer>
+        <div>
+            <NavBar/>
+
+            <Footer/>
+        </div>
     )
 
 }

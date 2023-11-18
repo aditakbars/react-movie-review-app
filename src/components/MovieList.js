@@ -10,7 +10,7 @@ const MovieList = ({ movies }) => {
                 <div className='postercard' key={movie.id}>
                     <Link to={`/movie/${movie.id}`}>
                         <img
-                            src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
+                            src={movie.poster_path ? `https://image.tmdb.org/t/p/w300${movie.poster_path}` : `https://source.unsplash.com/300x450/?${movie.title}`}
                             alt={movie.title}
                         />
                     </Link>
