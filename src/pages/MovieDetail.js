@@ -34,16 +34,24 @@ const MovieDetail = () => {
         <div>
         <NavBar />
         <main>
-            <article>
+            <article className='card'>
 
             {movie && (
                 <>
-                <h1>{movie.title}</h1>
-                <img
-                    src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
-                    alt={movie.title}
-                />
-                <p>{movie.overview}</p>
+                <h3>{movie.title}</h3>
+                <div className='review-image-container'>
+
+                <article className='moviecard-review'>
+                <div className='postercard'> 
+                    <img
+                        src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
+                        alt={movie.title}
+                    />
+                </div>
+                </article>
+                </div>
+                <p>Overview:<br/> {movie.overview}</p>
+                <p>Genres: {movie.genres.map(genre => genre.name).join(', ')} </p>
                 <p>Release Date: {movie.release_date}</p>
                 <p>Vote Average: {movie.vote_average}</p>
                 </>

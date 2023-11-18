@@ -44,29 +44,28 @@ const About = () => {
                     </header>
                     </article>
                     <article className="card" id="socmed">
-                    <div className="box-0-0-1 row-0-0-4 icons-0-0-779" id="socmed-icon">
-                    <a href="https://instagram.com/adit.akbarr" target="_blank" rel='noreferrer'>
-                        <FaInstagram size={30}/>
-                    </a>
-                    <a href="https://linkedin.com/in/aditakbars" target="_blank" rel='noreferrer'>
-                        <FaLinkedin size={30}/>
-                    </a>
-                    <a href="https://www.youtube.com/channel/UCJCjiREopSD0-Av186mz_yA" target="_blank" rel='noreferrer'>
-                        <FaYoutube size={30}/>
-                    </a>
-                        <a href="https://sptfy.com/inimah" target="_blank" rel='noreferrer'>
-                        <FaSpotify size={30}/>
-                    </a>
-                    <a href="https://letterboxd.com/aditjh/" target="_blank" rel='noreferrer'>
-                        <SiLetterboxd size={30}/>
-                    </a>
-                    <a href="https://github.com/aditakbars" target="_blank" rel='noreferrer'>
-                        <FaGithub size={30}/>
-                    </a>
-                    </div>
+                        <div className="box-0-0-1 row-0-0-4 icons-0-0-779" id="socmed-icon">
+                            <a href="https://instagram.com/adit.akbarr" target="_blank" rel='noreferrer'>
+                                <FaInstagram size={30}/>
+                            </a>
+                            <a href="https://linkedin.com/in/aditakbars" target="_blank" rel='noreferrer'>
+                                <FaLinkedin size={30}/>
+                            </a>
+                            <a href="https://www.youtube.com/channel/UCJCjiREopSD0-Av186mz_yA" target="_blank" rel='noreferrer'>
+                                <FaYoutube size={30}/>
+                            </a>
+                                <a href="https://sptfy.com/inimah" target="_blank" rel='noreferrer'>
+                                <FaSpotify size={30}/>
+                            </a>
+                            <a href="https://letterboxd.com/aditjh/" target="_blank" rel='noreferrer'>
+                                <SiLetterboxd size={30}/>
+                            </a>
+                            <a href="https://github.com/aditakbars" target="_blank" rel='noreferrer'>
+                                <FaGithub size={30}/>
+                            </a>
+                        </div>
                     </article>
                 </aside>
-
             </main>
         <Footer/>
         </div>
