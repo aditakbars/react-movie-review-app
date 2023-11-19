@@ -15,7 +15,7 @@ const Reviews = () => {
         const fetchReviews = async () => {
             try {
                 const response = await axios.get(
-                    'http://localhost:5000/reviews'
+                    'https://my-movie-review.onrender.com/reviews'
                 );
                 setReviews(response.data.data);
             } catch (error) {
