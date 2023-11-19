@@ -3,7 +3,7 @@ import axios from "axios";
 import '../App.css';
 
 //components
-import MovieList from '../components/MovieList';
+import ReviewList from "../components/ReviewList";
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -15,9 +15,9 @@ const Reviews = () => {
         const fetchReviews = async () => {
             try {
                 const response = await axios.get(
-                    'http://localhost:5000/reviews',
+                    'http://localhost:5000/reviews'
                 );
-                setReviews(response.data.results);
+                setReviews(response.data.data);
             } catch (error) {
                 console.error('Error fetching reviews:', error);
             }
@@ -29,7 +29,13 @@ const Reviews = () => {
     return(
         <div>
             <NavBar/>
-            
+            <main>
+                <article>
+                <div className='content' id='reviews'>
+                    <ReviewList reviews={reviews}/>
+                </div>
+                </article>
+                </main>
             <Footer/>
         </div>
     )
