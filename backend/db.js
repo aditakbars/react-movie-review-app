@@ -1,10 +1,10 @@
 const mysql = require('mysql');
 
 const conn  = mysql.createPool({
-    host: process.env.DB_HOST, 
-    user: process.env.DB_USERNAME, 
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DBNAME,
+    host: 'bdu0llmd9q5xhh3vfm5y-mysql.services.clever-cloud.com', 
+    user: 'uy9ulrreubsl2guy', 
+    password: '5LCtIGexMZiX27KbjiTH',
+    database: 'bdu0llmd9q5xhh3vfm5y',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -15,4 +15,4 @@ conn.getConnection((err) => {
     console.log('Database Connected!')
 });
 
-module.exports = conn.promise();
+module.exports = conn
