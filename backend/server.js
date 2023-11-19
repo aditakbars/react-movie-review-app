@@ -2,9 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const conn = require('./db');
 
+require('dotenv').config()
+
 const PORT = 5000;
 
 const app = express()
+app.use(express.urlencoded({extended: false}))
 app.use(cors());
 
 app.get('/', (req, res) => {
@@ -58,7 +61,7 @@ app.get('/reviews/:id', function (req, res) {
                 res.status(200).json({
                     "success": true,
                     "message": "Review fetched successfully",
-                    "data": results[0] // Assuming there's only one review with the given ID
+                    "data": results[0]
                 });
             }
         }
