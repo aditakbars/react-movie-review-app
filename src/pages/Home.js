@@ -59,21 +59,23 @@ const Home = () => {
                 
                 <h1>Search Movies</h1>
                 {/* Search Input */}
-                <input
-                    id='searchBar'
-                    type="text"
-                    placeholder="Search for a movie..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <div>
-                <button onClick={searchMovies}>Search</button>
+                <div id='searchContainer'>
+                    <input
+                        id='searchBar'
+                        type="text"
+                        placeholder="Search for a movie..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <div>
+                        <button onClick={searchMovies} id='searchButton'>Search</button>
+                    </div>
                 </div>
                 
                 {/* Search Results */}
                 {searchResults.length > 0 && (
                     <>
-                    <h3>Search Results</h3>
+                    <h4>Search Results</h4>
                     <MovieList movies={searchResults} />
                     </>
                 )}

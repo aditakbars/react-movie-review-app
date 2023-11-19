@@ -183,6 +183,38 @@ h6 {
   z-index: 3;
 }
 
+#searchContainer {
+  display: flex;
+  align-items: center;
+}
+
+/* Search Bar Styles */
+#searchBar {
+  background-color: #d8e0e8;
+  padding: 10px;
+  margin-right: 10px; /* Adjust the margin as needed */
+  width: 300px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Search Button Styles */
+#searchButton {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #16c822;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+#searchButton:hover {
+  background-color: #109219; 
+}
+
 .card {
   box-shadow: 0 2px 8px 2px rgba(0, 0, 0, 0.2);
   border-radius: 5px;

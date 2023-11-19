@@ -30,11 +30,19 @@ const Reviews = () => {
         <div>
             <NavBar/>
             <main>
-                <article>
-                <div className='content' id='reviews'>
-                    <ReviewList reviews={reviews}/>
-                </div>
+                <article className="card" id="reviews-intro">
+                <h2>Movie Review</h2>
+                    <p>
+                        Here are a few of my movie reviews, but fair warning, they're all written in Bahasa Indonesia,
+                        so I kindly ask that you don't set your expectations too high when it comes to my writing skills (hehe).
+                        While I may not be a professional critic, I pour my heart and soul into these reviews, sharing my candid thoughts and feelings about the films I've watched, often in a delightfully unpretentious and occasionally goofy manner.
+                    </p>
                 </article>
+                <div className="card-container" id="movies-container">
+                    <div className='content' id='reviews'>
+                        <ReviewList reviews={reviews}/>
+                    </div>
+                </div>
                 </main>
             <Footer/>
         </div>

@@ -14,7 +14,9 @@ const MovieList = ({ movies }) => {
                             alt={movie.title}
                         />
                     </Link>
-                    <h3 className='movie-title'>{movie.title}</h3>
+                    <h3 className='movie-title'>
+                        {movie.title} {movie.release_date ? `(${movie.release_date.slice(0, 4)})` : ''}
+                    </h3>
                 </div>
                 </article>
             ))}
