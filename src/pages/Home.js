@@ -60,6 +60,7 @@ const Home = () => {
                 <h1>Search Movies</h1>
                 {/* Search Input */}
                 <input
+                    id='searchBar'
                     type="text"
                     placeholder="Search for a movie..."
                     value={searchQuery}

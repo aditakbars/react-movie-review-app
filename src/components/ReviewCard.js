@@ -6,7 +6,8 @@ const ReviewCard = ({ review, onClick }) => {
         <div>
             {review && (
                 <>
-                <h3>{review.movie_title}</h3>
+                <h3>{review.review_title}</h3>
+                <h6>by Aditya Akbar</h6>
                 <div className='review-image-container'>
                 <article className='moviecard-review'>
                     <div className='postercard'> 
