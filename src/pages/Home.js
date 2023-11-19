@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 import '../App.css';
 
 //components
@@ -35,7 +34,7 @@ const Home = () => {
         fetchMovies();
     }, []);
 
-    const handleSearch = async () => {
+    const searchMovies = async () => {
         try {
             const response = await axios.get(
                 `https://api.themoviedb.org/3/search/movie?query=${searchQuery}&include_adult=true&api_key=68614c1e94153665aa5592b00e68c7ac`
@@ -57,7 +56,8 @@ const Home = () => {
 
                 <h1>Now Playing Movies</h1>
                 <MovieList movies={movies} />
-
+                
+                <h1>Search Movies</h1>
                 {/* Search Input */}
                 <input
                     type="text"
@@ -66,13 +66,13 @@ const Home = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <div>
-                <button onClick={handleSearch}>Search</button>
+                <button onClick={searchMovies}>Search</button>
                 </div>
                 
                 {/* Search Results */}
                 {searchResults.length > 0 && (
                     <>
-                    <h2>Search Results</h2>
+                    <h3>Search Results</h3>
                     <MovieList movies={searchResults} />
                     </>
                 )}
