@@ -15,4 +15,4 @@ conn.getConnection((err) => {
     console.log('Database Connected!')
 });
 
-module.exports = conn.promise();
+module.exports = conn
