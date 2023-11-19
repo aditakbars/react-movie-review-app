@@ -1,11 +1,13 @@
 const mysql = require('mysql');
+
 const conn  = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "movie_web_db",
-    charset: "utf8mb4",
-    timezone: "+07:00"
+    host: process.env.DB_HOST, 
+    user: process.env.DB_USERNAME, 
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DBNAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
 conn.getConnection((err) => {
@@ -13,4 +15,4 @@ conn.getConnection((err) => {
     console.log('Database Connected!')
 });
 
-module.exports = conn;
+module.exports = conn.promise();
