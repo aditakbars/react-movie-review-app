@@ -5,7 +5,7 @@ const conn = require('./db');
 const PORT = 5000;
 
 const app = express()
-app.use(cors())
+app.use(cors());
 
 app.get('/', (req, res) => {
     return res.json(
@@ -20,7 +20,11 @@ app.get('/reviews', function (req, res){
     conn.query(queryStr, (err, results) => {
         if (err){
             console.log(err);
-            res.error(err.sqlMessage, res);
+            res.status(500).json({
+                success: false,
+                message: "Internal Server Error",
+                error: err.sqlMessage
+            });
         } 
         else{
             res.status(200).json({
@@ -31,3 +35,32 @@ app.get('/reviews', function (req, res){
         }
     })
 })
+
+app.get('/reviews/:id', function (req, res) {
+    const reviewId = req.params.id;
+    const queryStr = "SELECT * FROM reviews WHERE review_id = ?";
+    
+    conn.query(queryStr, [reviewId], (err, results) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({
+                "success": false,
+                "message": "Error fetching review",
+                "error": err.sqlMessage
+            });
+        } else {
+            if (results.length === 0) {
+                res.status(404).json({
+                    "success": false,
+                    "message": "Review not found"
+                });
+            } else {
+                res.status(200).json({
+                    "success": true,
+                    "message": "Review fetched successfully",
+                    "data": results[0] // Assuming there's only one review with the given ID
+                });
+            }
+        }
+    });
+});
