@@ -34,7 +34,7 @@ const Reviews = () => {
         <div>
             <NavBar/>
             <main>
-                <article className="card" id="reviews-intro">
+                <article className="card" id="welcome">
                 <h2>Movie Review</h2>
                     <p>
                         Here are a few of my movie reviews, but fair warning, they're all written in Bahasa Indonesia,

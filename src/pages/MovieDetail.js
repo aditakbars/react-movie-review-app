@@ -36,7 +36,7 @@ const MovieDetail = () => {
         <div>
         <NavBar />
         <main>
-            <article className='card'>
+            <article className='card' id='welcome'>
                 <MovieCard movie={movie} />
             </article>
         </main>

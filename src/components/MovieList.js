@@ -7,7 +7,7 @@ const MovieList = ({ movies }) => {
         <div className='card-container' id='movies-container'>
             {movies.map((movie) => (
                 <article className='moviecard'>
-                <div className='postercard' key={movie.id}>
+                <div key={movie.id}>
                     <Link to={`/movies/${movie.id}`}>
                         <img
                             src={movie.poster_path ? `https://image.tmdb.org/t/p/w300${movie.poster_path}` : `https://source.unsplash.com/300x450/?${movie.title}`}

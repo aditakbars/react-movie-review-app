@@ -6,8 +6,9 @@ const ReviewCard = ({ review, onClick }) => {
         <div>
             {review && (
                 <>
-                <h3>{review.review_title}</h3>
-                <h6>by Aditya Akbar</h6>
+                <div id='detail-review'>
+                <h2>{review.review_title}</h2>
+                <h4>by Aditya Akbar</h4>
                 <div className='review-image-container'>
                 <article className='moviecard-review'>
                     <div className='postercard'> 
@@ -24,6 +25,7 @@ const ReviewCard = ({ review, onClick }) => {
                         <a href={`https://www.imdb.com/title/${review.imdb_id}`} target="_blank" rel='noreferrer'>Click here to go to the IMDB Page</a>
                     </p>
                 )}
+                </div>
                 </>
             )}
         </div>

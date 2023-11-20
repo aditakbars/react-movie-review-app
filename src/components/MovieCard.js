@@ -6,7 +6,8 @@ const MovieCard = ({ movie, onClick }) => {
         <div>
             {movie && (
                 <>
-                <h3>{movie.title}</h3>
+                <div id='movie-detail'>
+                <h2>{movie.title}</h2>
                 <div className='review-image-container'>
                 <article className='moviecard-review'>
                     <div className='postercard'> 
@@ -26,6 +27,7 @@ const MovieCard = ({ movie, onClick }) => {
                         <a href={`https://www.imdb.com/title/${movie.imdb_id}`} target="_blank" rel='noreferrer'>Click here to go to the IMDB Page</a>
                     </p>
                 )}
+                </div>
                 </>
             )}
         </div>

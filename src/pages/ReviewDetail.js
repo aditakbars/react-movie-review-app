@@ -30,7 +30,7 @@ const ReviewDetail = () => {
         <div>
         <NavBar />
         <main>
-            <article className='card'>
+            <article className='card' id='welcome'>
                 <ReviewCard review={review} />
             </article>
         </main>

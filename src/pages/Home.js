@@ -67,11 +67,11 @@ const Home = () => {
                 </article>
                 <br/>
                 <div className='content' id='reviews'>
-                <article>
-                <h1>Now Playing Movies</h1>
+                <article id='welcome'>
+                <h2>Now Playing Movies</h2>
                 <MovieList movies={movies} />
                 
-                <h1>Search Movies</h1>
+                <h2>Search Movies</h2>
                 {/* Search Input */}
                 <div id='searchContainer'>
                     <input

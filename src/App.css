@@ -8,6 +8,7 @@
 
 p{
   font-family: 'Lora', serif;
+  text-align: justify;
 }
 
 a{
@@ -63,7 +64,6 @@ main {
 .landing {
   padding: 20px;
   overflow: auto;
-  /* background-image: url(/assets/images/meanstreets_stills2.jpg); */
   background-size: cover;
   background-position: center;
   min-height: fit-content;
@@ -82,6 +82,7 @@ article{
   background-color: #8899aa60;
   border-radius: 0.7em;
 }
+
 
 .landing article{
   color: #fff;
@@ -116,6 +117,7 @@ footer {
 }
 
 footer p {
+  text-align: center;
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   transition: 0.5s;
@@ -164,7 +166,7 @@ h6 {
 
 #welcome h2{
   font-weight: 800;
-  font-size: 1.8em;
+  font-size: 1.4em;
 }
 
 #welcome p {
@@ -172,7 +174,12 @@ h6 {
   text-indent: 2em;
 }
 
-#reviews{
+#movie-detail p{
+  margin-top: 1em;
+  text-indent: 0;
+}
+
+#reviews p{
   font-size: 1.3em;
 }
 
@@ -180,6 +187,28 @@ h6 {
   color: #fff;
   text-align: justify;
   z-index: 3;
+}
+
+#reviews-intro p {
+  font-size: 1.3em;
+}
+
+#detail-article p{
+  margin-top: 1em;
+  text-indent: 0;
+}
+
+#detail-review {
+  text-align: justify;
+  font-size: 1.07em;
+  margin-top: 1em;
+}
+
+#detail-review p{
+  text-align: justify;
+  font-size: smaller;
+  margin-top: 1em;
+  text-indent: 2em;
 }
 
 #searchContainer {
@@ -191,11 +220,11 @@ h6 {
 #searchBar {
   background-color: #d8e0e8;
   padding: 10px;
-  margin-right: 10px; /* Adjust the margin as needed */
+  margin-right: 10px;
   width: 300px;
   border: none;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 0.8em;
 }
 
 /* Search Button Styles */
@@ -206,7 +235,7 @@ h6 {
   background-color: #16c822;
   color: #fff;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 0.8em;
   transition: background-color 0.3s;
 }
 
@@ -234,8 +263,8 @@ h6 {
 }
 
 .moviecard img{
-  max-width: 100%; /* Agar gambar tidak melebihi lebar card */
-  max-height: 100%; /* Agar gambar tidak melebihi tinggi card */
+  max-width: 100%;
+  max-height: 100%;
   object-fit: cover;
 }
 
@@ -248,7 +277,7 @@ h6 {
 }
 
 .moviecard p{
-  font-size: 1em;
+  font-size: 1.3em;
   text-align: center;
 }
 
@@ -433,10 +462,8 @@ h6 {
 }
 
 
-
-
 @media screen and (max-width: 1000px) {
-  h1,h2, h3, h4, p{
+  h1,h2, h3, h4{
     font-size: smaller;
   }
 
@@ -445,7 +472,12 @@ h6 {
   }
 
   p{
-    font-size: 0.73em;
+    font-size: 0.8em;
+  }
+
+  #detail-review h2, h4 {
+    font-size: 1.2em;
+    text-align: center;
   }
 
   .splash-screen{
@@ -464,7 +496,6 @@ h6 {
     padding: 20px;
     overflow: auto;
     min-height: 85vh;
-    /* background-image: url(/assets/images/taxi-driver-stills1-port.jpg); */
     background-size: cover;
     background-position: center;
   }

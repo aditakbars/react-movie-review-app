@@ -12,7 +12,7 @@ const ReviewList = ({ reviews }) => {
         <div className='card-container' id='movies-container'>
             {reviews.map((review) => (
                 <article className='moviecard'>
-                <div className='postercard' key={review.review_id}>
+                <div key={review.review_id}>
                     <Link to={`/reviews/${review.review_id}`}>
                         <img
                             src={review.poster_url}
