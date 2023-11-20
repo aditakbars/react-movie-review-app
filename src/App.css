@@ -6,7 +6,6 @@
   background-color: #fffaf000;
 }
 
-
 p{
   font-family: 'Lora', serif;
 }
@@ -399,7 +398,24 @@ h6 {
   transform: scale(1.5);
 }
 
-/* App.css */
+.splash-screen {
+  background-image: url(https://i.postimg.cc/gcqVxcpr/meanstreets-stills2.jpg);
+  background-blend-mode: difference;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #282c34; /* Ganti dengan warna latar belakang yang diinginkan */
+  color: white;
+}
+
+.splash-screen h1 {
+  font-size: 2em;
+}
+
 
 .loading-spinner {
   border: 8px solid rgba(255, 255, 255, 0.3);
@@ -420,7 +436,7 @@ h6 {
 
 
 @media screen and (max-width: 1000px) {
-  h2, h3, h4, p{
+  h1,h2, h3, h4, p{
     font-size: smaller;
   }
 
@@ -430,6 +446,16 @@ h6 {
 
   p{
     font-size: 0.73em;
+  }
+
+  .splash-screen{
+    background-image: url(https://i.postimg.cc/wv5mR2Sn/taxi-driver-stills1-port.jpg);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
   
   .landing{
