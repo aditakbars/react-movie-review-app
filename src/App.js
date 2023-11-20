@@ -16,12 +16,8 @@ function App() {
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    // Fungsionalitas atau proses apa pun yang memerlukan waktu
-    // Contoh: Memuat data dari API
     const fetchData = async () => {
       try {
-        // Gantilah dengan kode pengambilan data sesuai kebutuhan
-        // Simulasikan penundaan selama 2 detik
         await new Promise(resolve => setTimeout(resolve, 2000));
         setLoading(false);
       } catch (error) {
