@@ -12,10 +12,11 @@ const ReviewCard = ({ review, onClick }) => {
                 <h4>by Aditya Akbar</h4>
                 <div className='review-image-container'>
                 <article className='moviecard-review'>
-                    <div className='postercard'> 
+                    <div className='postercard' id='poster'> 
                         <img
                             src={review.poster_url}
                             alt={review.movie_title}
+                            
                         />
                     </div>
                 </article>

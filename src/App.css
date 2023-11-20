@@ -174,6 +174,10 @@ h6 {
   text-indent: 2em;
 }
 
+#movie-detail h2{
+  text-align: center;
+}
+
 #movie-detail p{
   margin-top: 1em;
   text-indent: 0;
@@ -526,6 +530,10 @@ h6 {
 
   .moviecard-review .postercard{
     max-height: 43vw;
+  }
+
+  #poster{
+    max-height: 73vw;
   }
 
   #movies-container .postercard{

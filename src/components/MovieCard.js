@@ -10,7 +10,7 @@ const MovieCard = ({ movie, onClick }) => {
                 <h2>{movie.title}</h2>
                 <div className='review-image-container'>
                 <article className='moviecard-review'>
-                    <div className='postercard'> 
+                    <div className='postercard' id='poster'> 
                         <img
                             src={movie.poster_path ? `https://image.tmdb.org/t/p/w300${movie.poster_path}` : `https://source.unsplash.com/300x450/?${movie.title}`}
                             alt={movie.title}
