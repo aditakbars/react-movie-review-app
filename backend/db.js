@@ -1,10 +1,11 @@
 const mysql = require('mysql');
 
 const conn  = mysql.createPool({
-    host: 'bdu0llmd9q5xhh3vfm5y-mysql.services.clever-cloud.com', 
-    user: 'uy9ulrreubsl2guy', 
-    password: '5LCtIGexMZiX27KbjiTH',
-    database: 'bdu0llmd9q5xhh3vfm5y',
+    host: 'dmg.h.filess.io', 
+    user: 'mymoviereviewdb_seedsymbol', 
+    password: '34f09b227374bb377d125c86cce005f15e08211a',
+    database: 'mymoviereviewdb_seedsymbol',
+    port: '3307',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
