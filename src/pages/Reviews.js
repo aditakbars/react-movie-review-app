@@ -6,10 +6,12 @@ import '../App.css';
 import ReviewList from "../components/ReviewList";
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
+import LoadingSpinner from "../components/LoadingSpinner";
 
 
 const Reviews = () => {
     const [reviews, setReviews] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -20,6 +22,8 @@ const Reviews = () => {
                 setReviews(response.data.data);
             } catch (error) {
                 console.error('Error fetching reviews:', error);
+            } finally{
+                setIsLoading(false);
             }
         };
 
@@ -38,12 +42,17 @@ const Reviews = () => {
                         While I may not be a professional critic, I pour my heart and soul into these reviews, sharing my candid thoughts and feelings about the films I've watched, often in a delightfully unpretentious and occasionally goofy manner.
                     </p>
                 </article>
-                <div className="card-container" id="movies-container">
-                    <div className='content' id='reviews'>
-                        <ReviewList reviews={reviews}/>
+                {isLoading? (
+                    <LoadingSpinner/>
+                ) : (
+                    <div className="card-container" id="movies-container">
+                        <div className='content' id='reviews'>
+                            <ReviewList reviews={reviews}/>
+                        </div>
                     </div>
-                </div>
-                </main>
+                    )
+                }
+            </main>
             <Footer/>
         </div>
     )

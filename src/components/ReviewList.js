@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../App.css';
 
+import LoadingSpinner from './LoadingSpinner';
+
 const ReviewList = ({ reviews }) => {
     if (!reviews) {
-        return <main><article>Loading.........</article></main>;
+        <LoadingSpinner/>
     }
     return (
         <div className='card-container' id='movies-container'>
