@@ -1,13 +1,11 @@
-import React, { useState, useEffect, Component } from 'react';
 import '../App.css';
 
-import { FaInstagram, FaLinkedin, FaYoutube, FaSpotify, FaTwitter, FaGithub } from 'react-icons/fa';
+import { FaInstagram, FaLinkedin, FaYoutube, FaSpotify, FaGithub } from 'react-icons/fa';
 import { SiLetterboxd } from "react-icons/si";
 
 //Component
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
-
 
 const About = () => {
     return (
@@ -15,12 +13,14 @@ const About = () => {
         <NavBar/>
             <main>
                 <div id="content">
-                    <article className="card">
+                    <article className="card" id='about'>
                     <h2>About This Website</h2>
                     <p>
-                        So, this basic movie review website? Yeah, I put it together using good ol' HTML and CSS. 
-                        Well, actually I wanted to use the Tailwind CSS Framework but I think I still need a lot more time to read the long ahh documentation hahaha.
-                        Of course it got me thinking like "Not for now my g". So, maybe I'll get around to it eventually.
+                        Welcome to my movie review website! This platform is crafted using the power of React and adheres to the Progressive Web App (PWA) standards. 
+                        Utilizing the robust capabilities of the TMDb API (The Movie Database), this website provides real-time information on currently playing movies, trending films, 
+                        and allows you to explore an extensive database for your favorite titles.
+                        In contrast to my earlier version built with good old HTML and CSS, this iteration marks a significant upgrade. 
+                        The adoption of React not only enhances the user interface but also introduces dynamic functionalities, making the overall experience more seamless.
                     </p>
                     <p>
                         Ok, So this site? Yeah, it's just a casual passion project.
@@ -28,14 +28,11 @@ const About = () => {
                         Let's stay cool and connected!
                     </p>
                     </article>
-                    <br className="brr"/>
-                    <br className="brr"/>
                 </div>
-
                 <aside>
                     <article className="card-profile">
                     <header>
-                        <h2>hehe</h2>
+                        <h2 id="socmed-icon">🎬</h2>
                         <article className="moviecard" id="profile-pic">
                             <div className="postercard">
                             <img src="https://storage.googleapis.com/profile-page-nih.appspot.com/profile.png" alt="profile"/>

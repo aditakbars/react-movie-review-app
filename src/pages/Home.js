@@ -71,7 +71,8 @@ const Home = () => {
                 <article id="welcome">
                 <h2>WELCOME</h2>
                 <p>
-                    Hey there, welcome to my website, folks! I've created this so-called website to share some of my movie reviews, and trust me, they can get pretty goofy at times (haha). So, if you're in the mood for some light-hearted, offbeat takes on some of my favorite films, you're in the right place. I've spent countless hours dissecting and pondering the intricacies of cinema, and I thought, "Why not turn these passionate ramblings into something others can enjoy?".
+                    Hey there, welcome to my website, folks! I've created this so-called website to share some of my movie reviews, and trust me, they can get pretty goofy at times (haha). So, if you're in the mood for some light-hearted, offbeat takes on some of my favorite films, you're in the right place. 
+                    I've spent countless hours dissecting and pondering the intricacies of cinema, and I thought, "Why not turn these passionate ramblings into something others can enjoy?".
                 </p>
                 <p>
                     So, if you're curious about my unique perspective on the film world, just head over to the "Reviews" section in the navigation bar above.
@@ -115,7 +116,6 @@ const Home = () => {
                                 <button onClick={searchMovies} id='searchButton'>Search</button>
                             </div>
                         </div>
-                        
                         {/* Search Results */}
                         {searchResults.length > 0 && (
                             <>
