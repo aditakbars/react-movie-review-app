@@ -12,15 +12,16 @@ const ReviewList = ({ reviews }) => {
         <div className='card-container' id='movies-container'>
             {reviews.map((review) => (
                 <article className='moviecard'>
-                <div key={review.review_id}>
+                <div className='postercard' key={review.review_id}>
                     <Link to={`/reviews/${review.review_id}`}>
                         <img
+                            id='poster-image'
                             src={review.poster_url}
                             alt={review.movie_title}
                         />
                     </Link>
-                    <h3 className='movie-title'>{review.movie_title}</h3>
                 </div>
+                <h3 className='movie-title'>{review.movie_title}</h3>
                 </article>
             ))}
         </div>
