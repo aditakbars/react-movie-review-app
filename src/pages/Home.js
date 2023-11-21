@@ -9,6 +9,7 @@ import Footer from '../components/Footer';
 
 const Home = () => {
     const [movies, setMovies] = useState([]);
+    const [trending, setTrending] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
 
@@ -30,8 +31,25 @@ const Home = () => {
                 console.error('Error fetching movies:', error);
             }
         };
-
+        const fetchTrending = async () => {
+            try {
+                const response = await axios.get(
+                    'https://api.themoviedb.org/3/trending/movie/day',
+                    {
+                        params: {
+                            api_key: '68614c1e94153665aa5592b00e68c7ac',
+                            language: 'en-US',
+                            page: 1,
+                        },
+                    }
+                );
+                setTrending(response.data.results);
+            } catch (error) {
+                console.error('Error fetching movies:', error);
+            }
+        };
         fetchMovies();
+        fetchTrending();
     }, []);
 
     const searchMovies = async () => {
@@ -61,40 +79,51 @@ const Home = () => {
                     <br/> 
                 </p>
                 <p>
-                    By the way, I also have added the feature to show movies that are currently in theatres and you can also search a movie using the search feature below. So, Enjoy your stay!
+                    By the way, I also have added the feature to show movies that are currently in theatres and some trending movies. You can also search a movie using the search feature below. So, Enjoy your stay!
                     <br/>
                 </p>
                 </article>
                 <br/>
                 <div className='content' id='reviews'>
-                <article id='welcome'>
-                <h2>Now Playing Movies</h2>
-                <MovieList movies={movies} />
-                
-                <h2>Search Movies</h2>
-                {/* Search Input */}
-                <div id='searchContainer'>
-                    <input
-                        id='searchBar'
-                        type="text"
-                        placeholder="Search for a movie..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <div>
-                        <button onClick={searchMovies} id='searchButton'>Search</button>
-                    </div>
+                    <article id='welcome'>
+                        <h2>Now Playing Movies</h2>
+                        <MovieList movies={movies} />
+                    </article>
+                <br/>
                 </div>
-                
-                {/* Search Results */}
-                {searchResults.length > 0 && (
-                    <>
-                    <h4>Search Results:</h4>
-                    <MovieList movies={searchResults} />
-                    </>
-                )}
-
-                </article>
+                <div className='content' id='reviews'>
+                    <article id='welcome'>
+                        <h2>Trending Movies</h2>
+                        <MovieList movies={trending} />
+                        <br/>
+                    </article>
+                    <br/>
+                </div>
+                <div className='content' id='reviews'>
+                    <article id='welcome'>
+                        <h2>Search Movies</h2>
+                        {/* Search Input */}
+                        <div id='searchContainer'>
+                            <input
+                                id='searchBar'
+                                type="text"
+                                placeholder="Search for a movie..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            <div>
+                                <button onClick={searchMovies} id='searchButton'>Search</button>
+                            </div>
+                        </div>
+                        
+                        {/* Search Results */}
+                        {searchResults.length > 0 && (
+                            <>
+                            <h5>Search Results:</h5>
+                            <MovieList movies={searchResults} />
+                            </>
+                        )}
+                    </article>
                 </div>
             </main>
         <Footer/>

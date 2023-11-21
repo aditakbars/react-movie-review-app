@@ -222,6 +222,7 @@ h6 {
 
 /* Search Bar Styles */
 #searchBar {
+  font-family: 'Inter', sans-serif;
   background-color: #d8e0e8;
   padding: 10px;
   margin-right: 10px;
@@ -233,6 +234,7 @@ h6 {
 
 /* Search Button Styles */
 #searchButton {
+  font-family: 'Inter', sans-serif;
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
@@ -337,6 +339,7 @@ h6 {
 }
 
 .imdb-link a:hover{
+  font-family: 'Inter', sans-serif;
   text-transform: uppercase;
   color: rgb(0, 255, 51);
   text-decoration: underline;
@@ -451,6 +454,7 @@ h6 {
 }
 
 .splash-screen h1 {
+  text-align: center;
   padding: 1em;
   border-radius: 0.2em;
   background-color: #2c344029;
@@ -508,6 +512,10 @@ h6 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
+
+  .splash-screen h1 {
+    font-size: 1.47em;
   }
   
   .landing{

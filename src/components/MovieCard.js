@@ -21,6 +21,7 @@ const MovieCard = ({ movie, onClick }) => {
                 <p>Overview:<br/> {movie.overview}</p>
                 <p>Genres: {movie.genres.map(genre => genre.name).join(', ')} </p>
                 <p>Release Date: {movie.release_date}</p>
+                <p>Runtime: {movie.runtime} minutes</p>
                 <p>Vote Average: {movie.vote_average}</p>
                 {movie.imdb_id && (
                     <p className='imdb-link'>
