@@ -31,8 +31,6 @@ const MovieDetail = () => {
             }
         };
 
-        fetchMovie();
-
         const fetchSimilar = async () => {
             try {
                 const response = await axios.get(
@@ -49,7 +47,8 @@ const MovieDetail = () => {
                 console.error('Error fetching similar movie:', error);
             }
         };
-
+        
+        fetchMovie();
         fetchSimilar();
     }, [id]);
 
@@ -60,13 +59,17 @@ const MovieDetail = () => {
                 <article className='card' id='welcome'>
                     <MovieCard movie={movie} />
                 </article>
-                <br/>
-                <div className='content' id='reviews'>
-                    <article id='welcome'>
-                        <h2>Similar Movies</h2>
-                        <MovieList movies={similar} />
-                    </article>
-                </div>
+                {similar && (
+                    <>
+                    <br/>
+                    <div className='content' id='reviews'>
+                        <article id='welcome'>
+                            <h2>Similar Movies</h2>
+                            <MovieList movies={similar} />
+                        </article>
+                    </div>
+                    </>
+                )}
             </main>
             <Footer/>
         </div>
