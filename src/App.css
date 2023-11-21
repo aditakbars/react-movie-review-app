@@ -276,7 +276,7 @@ h6 {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 350px; /* Tinggi yang diinginkan untuk setiap postercard */
+  height: 350px;
   max-height: fit-content;
 }
 

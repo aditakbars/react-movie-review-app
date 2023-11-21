@@ -89,7 +89,7 @@ const Home = () => {
                 {/* Search Results */}
                 {searchResults.length > 0 && (
                     <>
-                    <h4>Search Results</h4>
+                    <h4>Search Results:</h4>
                     <MovieList movies={searchResults} />
                     </>
                 )}
