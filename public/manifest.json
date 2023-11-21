@@ -13,8 +13,8 @@
       "sizes": "192x192"
     },
     {
-      "src": "The_Criterion_Collection_Logo.svg",
-      "type": "image/svg+xml",
+      "src": "logo512.png",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ],
