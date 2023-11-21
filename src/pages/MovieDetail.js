@@ -47,7 +47,7 @@ const MovieDetail = () => {
                 console.error('Error fetching similar movie:', error);
             }
         };
-        
+
         fetchMovie();
         fetchSimilar();
     }, [id]);
@@ -59,7 +59,7 @@ const MovieDetail = () => {
                 <article className='card' id='welcome'>
                     <MovieCard movie={movie} />
                 </article>
-                {similar && (
+                {similar.length > 0 && (
                     <>
                     <br/>
                     <div className='content' id='reviews'>
