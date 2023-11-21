@@ -1,19 +1,19 @@
 {
-  "short_name": "Movie App",
-  "name": "Adit's Movie Review App",
+  "short_name": "Adit's Review",
+  "name": "Adit's Movie Review",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "The_Criterion_Collection_Logo.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "The_Criterion_Collection_Logo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "The_Criterion_Collection_Logo.png",
       "type": "image/png",
       "sizes": "512x512"
     }
