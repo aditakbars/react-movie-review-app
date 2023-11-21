@@ -528,12 +528,8 @@ h6 {
     background-position: center;
   }
 
-  #content, aside {
-    width: 100%;
-  }
-
-  aside{
-    padding-left: 0;
+  #searchBar {
+    width: 215px;
   }
 
   #movies{
