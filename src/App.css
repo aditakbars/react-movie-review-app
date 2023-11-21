@@ -437,8 +437,12 @@ h6 {
   transition: 0.257s;
 }
 
-#socmed-icon a:hover , h2:hover{
+#socmed-icon a:hover {
   transform: scale(1.5);
+}
+
+.card-profile h2{
+  animation: zoom 1.5s linear infinite;
 }
 
 .splash-screen {
@@ -480,6 +484,12 @@ h6 {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@keyframes zoom {
+  0% { transform: scale(1.0); }
+  50% {transform: scale(1.5);}
+  100% { transform: scale(1.0); }
 }
 
 @media screen and (max-width: 1000px) {
@@ -565,6 +575,10 @@ h6 {
 
   #socmed-icon{
     font-size: larger;
+  }
+
+  .card-profile h2{
+    font-size: x-large;
   }
 
   footer p{

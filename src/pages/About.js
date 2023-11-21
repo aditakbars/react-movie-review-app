@@ -32,7 +32,7 @@ const About = () => {
                 <aside>
                     <article className="card-profile">
                     <header>
-                        <h2 id="socmed-icon">🎬</h2>
+                        <h2>🎬</h2>
                         <article className="moviecard" id="profile-pic">
                             <div className="postercard">
                             <img src="https://storage.googleapis.com/profile-page-nih.appspot.com/profile.png" alt="profile"/>
