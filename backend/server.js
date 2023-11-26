@@ -12,7 +12,7 @@ app.use(cors());
 
 app.get('/', (req, res) => {
     return res.json(
-        'Hi! (from Backend)'
+        'Hi! this API was created by Aditya Akbar Subakti (me) (hehe). To get all my personal movie reviews, add /reviews at the end of the URL. Ok, thats all... I guess.'
     )
 })
 
