@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "react-movie-review-app",
     "public": "build",
     "ignore": [
       "firebase.json",
