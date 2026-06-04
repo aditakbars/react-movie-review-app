@@ -461,7 +461,7 @@ h6 {
   background-color: #1a2130;
   color: #d8e0e8;
   padding: 10px 16px;
-  width: 300px;
+  width: 320px;
   border: 1px solid #3d5168;
   border-right: none;
   border-radius: 8px 0 0 8px;
@@ -479,18 +479,7 @@ h6 {
 }
 
 #searchButton {
-  font-family: 'Inter', sans-serif;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 0 8px 8px 0;
-  background-color: #16c822;
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.88em;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  transition: background-color 0.2s, transform 0.15s;
-  height: 100%;
+  display: none;
 }
 
 #searchButton:hover {
@@ -674,6 +663,189 @@ footer p {
 footer:hover p {
   color: #16c822;
 }
+
+/* ── BACK BUTTON ── */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #3d5168;
+  color: #8aa4bf;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82em;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.back-btn:hover {
+  color: #fff;
+  border-color: #16c822;
+  background: rgba(22, 200, 34, 0.08);
+}
+
+/* ── ERROR BANNER ── */
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(220, 60, 60, 0.12);
+  border: 1px solid rgba(220, 60, 60, 0.4);
+  color: #f08080;
+  font-size: 0.88em;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-family: 'Inter', sans-serif;
+}
+
+.error-dismiss {
+  background: none;
+  border: none;
+  color: #f08080;
+  cursor: pointer;
+  font-size: 1em;
+  padding: 0 4px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.error-dismiss:hover {
+  opacity: 1;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  color: #5a7088;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9em;
+  padding: 20px 4px;
+  text-align: left;
+}
+
+/* ── SEARCH COUNT ── */
+.search-count {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8em;
+  color: #5a7088;
+  margin: 12px 0 0;
+  text-indent: 0;
+}
+
+/* ── SEARCH CLEAR BUTTON ── */
+.search-clear {
+  background: none;
+  border: 1px solid #3d5168;
+  color: #8aa4bf;
+  width: 38px;
+  height: 38px;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: color 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-clear:hover {
+  color: #fff;
+  background: #2c3e52;
+}
+
+#searchBar:has(+ .search-clear) {
+  border-radius: 8px 0 0 8px;
+}
+
+/* ── GENRE FILTER ── */
+.genre-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 8px;
+}
+
+.genre-btn {
+  background: #1a2130;
+  border: 1px solid #3d5168;
+  color: #8aa4bf;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75em;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.genre-btn:hover {
+  color: #fff;
+  border-color: #16c822;
+}
+
+.genre-btn.active {
+  background: #16c822;
+  border-color: #16c822;
+  color: #000;
+  font-weight: 700;
+}
+
+.filter-count {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75em;
+  color: #5a7088;
+  align-self: center;
+  margin-left: 4px;
+}
+
+/* ── MOVIE DETAIL SKELETON ── */
+.detail-skeleton {
+  display: flex;
+  gap: 28px;
+  padding: 24px;
+  background: #252f3d;
+  border: 1px solid #2c3f55;
+  border-radius: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.detail-skeleton-poster {
+  width: 210px;
+  height: 315px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, #1e2a3a 25%, #2c3e52 50%, #1e2a3a 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.detail-skeleton-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 10px;
+  min-width: 200px;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #1e2a3a 25%, #2c3e52 50%, #1e2a3a 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-line.short  { width: 30%; }
+.skeleton-line.medium { width: 55%; }
+.skeleton-line.wide   { width: 75%; height: 20px; }
+.skeleton-line.full   { width: 100%; }
 
 /* ── MISC ── */
 #movie-info-card {

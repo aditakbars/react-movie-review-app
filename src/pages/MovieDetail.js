@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import '../App.css';
 
 import MovieCard from '../components/MovieCard';
@@ -8,43 +8,42 @@ import MovieList from '../components/MovieList';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
 
+const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
+const TMDB_BASE = 'https://api.themoviedb.org/3';
+
 const MovieDetail = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [movie, setMovie] = useState(null);
     const [similar, setSimilar] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
+        setIsLoading(true);
+        setError(null);
+
         const fetchMovie = async () => {
             try {
-                const response = await axios.get(
-                    `https://api.themoviedb.org/3/movie/${id}`,
-                    {
-                        params: {
-                            api_key: '68614c1e94153665aa5592b00e68c7ac',
-                            language: 'en-US',
-                        },
-                    }
-                );
+                const response = await axios.get(`${TMDB_BASE}/movie/${id}`, {
+                    params: { api_key: TMDB_KEY, language: 'en-US' },
+                });
                 setMovie(response.data);
-            } catch (error) {
-                console.error('Error fetching movie details:', error);
+            } catch (err) {
+                setError('Could not load this movie. It may not exist or the service is unavailable.');
+            } finally {
+                setIsLoading(false);
             }
         };
 
         const fetchSimilar = async () => {
             try {
-                const response = await axios.get(
-                    `https://api.themoviedb.org/3/movie/${id}/similar`,
-                    {
-                        params: {
-                            api_key: '68614c1e94153665aa5592b00e68c7ac',
-                            language: 'en-US',
-                        },
-                    }
-                );
+                const response = await axios.get(`${TMDB_BASE}/movie/${id}/similar`, {
+                    params: { api_key: TMDB_KEY, language: 'en-US' },
+                });
                 setSimilar(response.data.results);
-            } catch (error) {
-                console.error('Error fetching similar movie:', error);
+            } catch {
+                // Similar movies failing silently is acceptable
             }
         };
 
@@ -56,22 +55,39 @@ const MovieDetail = () => {
         <div>
             <NavBar />
             <main>
-                <article className='card' id='welcome'>
-                    <MovieCard movie={movie} />
-                </article>
+                <button className='back-btn' onClick={() => navigate(-1)}>← Back</button>
+
+                {error && <div className='error-banner'>⚠ {error}</div>}
+
+                {isLoading ? (
+                    <div className='detail-skeleton'>
+                        <div className='detail-skeleton-poster' />
+                        <div className='detail-skeleton-info'>
+                            <div className='skeleton-line wide' />
+                            <div className='skeleton-line medium' />
+                            <div className='skeleton-line medium' />
+                            <div className='skeleton-line short' />
+                            <div className='skeleton-line full' />
+                            <div className='skeleton-line full' />
+                            <div className='skeleton-line medium' />
+                        </div>
+                    </div>
+                ) : (
+                    <article className='card' id='welcome'>
+                        <MovieCard movie={movie} />
+                    </article>
+                )}
+
                 {similar.length > 0 && (
                     <>
-                    <br/>
-                    <div className='content' id='reviews'>
-                        <article id='welcome'>
+                        <div className='section-heading'>
                             <h2>Similar Movies</h2>
-                            <MovieList movies={similar} />
-                        </article>
-                    </div>
+                        </div>
+                        <MovieList movies={similar} />
                     </>
                 )}
             </main>
-            <Footer/>
+            <Footer />
         </div>
     );
 };
