@@ -5,6 +5,9 @@ import '../App.css';
 
 import MovieCard from '../components/MovieCard';
 import MovieList from '../components/MovieList';
+import CastRow from '../components/CastRow';
+import WatchProviders from '../components/WatchProviders';
+import TrailerModal from '../components/TrailerModal';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -15,41 +18,56 @@ const MovieDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [movie, setMovie] = useState(null);
-    const [similar, setSimilar] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showTrailer, setShowTrailer] = useState(false);
 
     useEffect(() => {
         setIsLoading(true);
         setError(null);
+        setMovie(null);
+        window.scrollTo(0, 0);
 
         const fetchMovie = async () => {
             try {
                 const response = await axios.get(`${TMDB_BASE}/movie/${id}`, {
-                    params: { api_key: TMDB_KEY, language: 'en-US' },
+                    params: {
+                        api_key: TMDB_KEY,
+                        language: 'en-US',
+                        append_to_response: 'credits,videos,watch/providers,release_dates,recommendations,similar',
+                    },
                 });
                 setMovie(response.data);
-            } catch (err) {
+            } catch {
                 setError('Could not load this movie. It may not exist or the service is unavailable.');
             } finally {
                 setIsLoading(false);
             }
         };
 
-        const fetchSimilar = async () => {
-            try {
-                const response = await axios.get(`${TMDB_BASE}/movie/${id}/similar`, {
-                    params: { api_key: TMDB_KEY, language: 'en-US' },
-                });
-                setSimilar(response.data.results);
-            } catch {
-                // Similar movies failing silently is acceptable
-            }
-        };
-
         fetchMovie();
-        fetchSimilar();
     }, [id]);
+
+    // Extract everything from the single append_to_response call
+    const cast = movie?.credits?.cast?.slice(0, 16) || [];
+    const crew = movie?.credits?.crew || [];
+    const videos = movie?.videos?.results || [];
+    const watchProviders = movie?.['watch/providers']?.results || {};
+    const releaseDates = movie?.release_dates?.results || [];
+    const recommendations = movie?.recommendations?.results?.slice(0, 12) || [];
+    const similar = movie?.similar?.results?.slice(0, 12) || [];
+
+    const trailer = videos.find(v => v.type === 'Trailer' && v.official && v.site === 'YouTube')
+        || videos.find(v => v.type === 'Trailer' && v.site === 'YouTube')
+        || videos.find(v => v.site === 'YouTube');
+
+    const certification = releaseDates
+        .find(r => r.iso_3166_1 === 'US')
+        ?.release_dates
+        ?.find(rd => rd.certification)
+        ?.certification || '';
+
+    const director = crew.find(c => c.job === 'Director');
 
     return (
         <div>
@@ -72,19 +90,45 @@ const MovieDetail = () => {
                             <div className='skeleton-line medium' />
                         </div>
                     </div>
-                ) : (
-                    <article className='card' id='welcome'>
-                        <MovieCard movie={movie} />
-                    </article>
+                ) : movie && (
+                    <>
+                        <article className='card' id='welcome'>
+                            <MovieCard
+                                movie={movie}
+                                certification={certification}
+                                director={director}
+                                trailer={trailer}
+                                onTrailerClick={() => setShowTrailer(true)}
+                            />
+                        </article>
+
+                        <WatchProviders providers={watchProviders} />
+
+                        {cast.length > 0 && (
+                            <>
+                                <div className='section-heading'><h2>Cast & Crew</h2></div>
+                                <CastRow cast={cast} crew={crew} />
+                            </>
+                        )}
+
+                        {recommendations.length > 0 && (
+                            <>
+                                <div className='section-heading'><h2>Recommended</h2></div>
+                                <MovieList movies={recommendations} />
+                            </>
+                        )}
+
+                        {similar.length > 0 && (
+                            <>
+                                <div className='section-heading'><h2>Similar Movies</h2></div>
+                                <MovieList movies={similar} />
+                            </>
+                        )}
+                    </>
                 )}
 
-                {similar.length > 0 && (
-                    <>
-                        <div className='section-heading'>
-                            <h2>Similar Movies</h2>
-                        </div>
-                        <MovieList movies={similar} />
-                    </>
+                {showTrailer && trailer && (
+                    <TrailerModal videoKey={trailer.key} onClose={() => setShowTrailer(false)} />
                 )}
             </main>
             <Footer />
