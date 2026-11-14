@@ -73,6 +73,13 @@ const Home = () => {
         <div>
             <NavBar />
             <main id="main">
+                <header className="mast wrap">
+                    <h1 className="mast__name">Adit's Cinema</h1>
+                    <div className="mast__rule">
+                        <p className="mast__lede">Film reviews written in Bahasa Indonesia, hung beside everything on screen this week. Honest, sometimes goofy, never professional.</p>
+                        <p className="mast__count">{loaded && lists.now.length > 0 && <><span className="num">{lists.now.length}</span> films showing</>}</p>
+                    </div>
+                </header>
                 <section className="facade" aria-labelledby="feature-title">
                     <div className="wrap">
                         <p className="facade__marquee" aria-hidden="true">Tonight's feature</p>
@@ -87,10 +94,6 @@ const Home = () => {
                                 </span>
                             </Link>
                         ) : <div className="facade__board facade__board--rest" />}
-                        <div className="facade__intro">
-                            <h1>Film reviews in Bahasa Indonesia, hung beside everything showing this week.</h1>
-                            <p>Honest, sometimes goofy, never professional. Pick a board, or go straight to the <Link to="/reviews">reviews</Link>.</p>
-                        </div>
                     </div>
                 </section>
 
@@ -114,7 +117,11 @@ const Home = () => {
                         </div>
                     )}
                     {!loaded ? <LoadingSpinner /> : now.length
-                        ? <Billboards movies={now} lead limit={13} />
+                        ? <ProgrammeList label="Now showing" items={now.map((m) => ({
+                            key: m.id, to: `/movies/${m.id}`, title: m.title,
+                            image: m.poster_path && `https://image.tmdb.org/t/p/w500${m.poster_path}`,
+                            meta: [(m.genre_ids || []).slice(0, 2).map((id) => genreName[id]).filter(Boolean).join(', '), m.release_date?.slice(0, 4), m.vote_average > 0 && m.vote_average.toFixed(1)],
+                        }))} />
                         : <p className="empty">No {strandName} films are showing this week. <button className="text-btn" onClick={() => setStrand(null)}>Show them all</button></p>}
                 </section>
 
