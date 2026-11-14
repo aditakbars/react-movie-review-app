@@ -12,7 +12,7 @@ const Footer = () => (
                 <li><Link to="/about">About</Link></li>
             </ul>
             <p className="colophon__note">
-                Dilukis dengan tangan, kira-kira. Reviews by Adit Akbars, © 2026. Film data and images from TMDb;
+                Hand-painted, more or less. Reviews by Adit Akbars, © 2026. Film data and images from TMDb;
                 this site is not endorsed or certified by TMDb. Streaming listings by JustWatch.
             </p>
         </div>

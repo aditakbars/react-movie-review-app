@@ -2,7 +2,7 @@
   Variant C — Impeccable method, world: the hand-painted billboards on the
   fronts of Indonesian bioskop (1970s–90s). A sun-bleached cream wall,
   sign-painter red, yellow and blue, lettering with painted drop shading,
-  timber frames. Section names in Bahasa Indonesia with English beneath.
+  timber frames. English section signs with a line beneath.
   Signature: every film hangs as a billboard that swings a little on hover.
   The painted drop shadow is the world's own lettering, not a default.
 */
@@ -102,7 +102,7 @@ img { display: block; max-width: 100%; }
 .board__meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 14px; color: var(--muted); font-weight: 600; }
 .board__meta span { color: var(--red); }
 
-/* ── Ranked list (Terbaik sepanjang masa) ── */
+/* ── Ranked list (Best of all time) ── */
 .prog { display: grid; grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 320px); gap: 40px; align-items: start; }
 .prog__list > li { border-bottom: 3px dotted var(--timber-2); }
 .prog__row { display: grid; grid-template-columns: 0 minmax(0, 1fr) auto; align-items: center; gap: 0 20px; padding: 14px 0; }

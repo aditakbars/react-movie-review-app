@@ -7,7 +7,7 @@ const NavBar = () => (
         <a className="skip-link" href="#main">Skip to content</a>
         <div className="wrap bar__inner">
             <Link to="/" className="bar__brand">Adit's Cinema</Link>
-            <span className="bar__issue">Ulasan film · Film reviews</span>
+            <span className="bar__issue">Film reviews</span>
             <nav aria-label="Main">
                 <ul className="bar__links">
                     <li><NavLink to="/" end>Films</NavLink></li>

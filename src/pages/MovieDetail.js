@@ -96,13 +96,13 @@ const MovieDetail = () => {
 
                 {movie?.recommendations?.results?.length > 0 && (
                     <section className="block">
-                        <div className="block__head"><h2>Mirip ini</h2><p lang="en" className="block__en">If you liked it</p></div>
+                        <div className="block__head"><h2>If you liked it</h2></div>
                         <Billboards movies={movie.recommendations.results} limit={8} />
                     </section>
                 )}
                 {movie?.similar?.results?.length > 0 && (
                     <section className="block">
-                        <div className="block__head"><h2>Film serupa</h2><p lang="en" className="block__en">Related films</p></div>
+                        <div className="block__head"><h2>Related films</h2></div>
                         <Billboards movies={movie.similar.results} limit={8} />
                     </section>
                 )}

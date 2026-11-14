@@ -23,7 +23,7 @@ const Billboards = ({ movies, lead = false, limit = 12, note }) => (
                         <span className="board__title">{m.title}</span>
                         <span className="board__meta">
                             {note ? note(m) : m.release_date?.slice(0, 4)}
-                            {m.vote_average > 0 && <span>Nilai {m.vote_average.toFixed(1)}</span>}
+                            {m.vote_average > 0 && <span>Rated {m.vote_average.toFixed(1)}</span>}
                         </span>
                     </span>
                 </Link>

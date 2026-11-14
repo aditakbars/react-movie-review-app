@@ -12,12 +12,12 @@ import Footer from '../components/Footer';
 
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
 const TMDB_BASE = 'https://api.themoviedb.org/3';
-const opens = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) : '');
+const opens = (d) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) : '');
 
 const Heading = ({ id, local, english }) => (
     <div className="sign">
         <h2 id={id}>{local}</h2>
-        <p lang="en">{english}</p>
+        <p>{english}</p>
     </div>
 );
 
@@ -75,7 +75,7 @@ const Home = () => {
             <main id="main">
                 <section className="facade" aria-labelledby="feature-title">
                     <div className="wrap">
-                        <p className="facade__marquee" aria-hidden="true">Sedang tayang</p>
+                        <p className="facade__marquee" aria-hidden="true">Tonight's feature</p>
                         {feature ? (
                             <Link to={`/movies/${feature.id}`} className="facade__board">
                                 <span className="facade__frame">
@@ -83,7 +83,7 @@ const Home = () => {
                                 </span>
                                 <span className="facade__banner">
                                     <span id="feature-title" className="facade__title">{feature.title}</span>
-                                    <span className="facade__go">Lihat filmnya <FiArrowRight aria-hidden="true" /></span>
+                                    <span className="facade__go">See the film <FiArrowRight aria-hidden="true" /></span>
                                 </span>
                             </Link>
                         ) : <div className="facade__board facade__board--rest" />}
@@ -104,10 +104,10 @@ const Home = () => {
                 )}
 
                 <section className="block wrap" aria-labelledby="now">
-                    <Heading id="now" local="Sedang tayang" english="Now showing" />
+                    <Heading id="now" local="Now showing" english="In cinemas this week" />
                     {genres.length > 0 && (
                         <div className="strands" role="group" aria-label="Filter by genre">
-                            <button aria-pressed={strand === null} onClick={() => setStrand(null)}>Semua · All</button>
+                            <button aria-pressed={strand === null} onClick={() => setStrand(null)}>All</button>
                             {genres.map((g) => (
                                 <button key={g.id} aria-pressed={strand === g.id} onClick={() => setStrand(strand === g.id ? null : g.id)}>{g.name}</button>
                             ))}
@@ -119,19 +119,19 @@ const Home = () => {
                 </section>
 
                 <section className="block wrap" aria-labelledby="soon">
-                    <Heading id="soon" local="Segera tayang" english="Coming soon" />
+                    <Heading id="soon" local="Coming soon" english="Opening in the weeks ahead" />
                     {!loaded ? <LoadingSpinner /> : upcoming.length
-                        ? <Billboards movies={upcoming} limit={8} note={(m) => `Mulai ${opens(m.release_date)}`} />
+                        ? <Billboards movies={upcoming} limit={8} note={(m) => `Opens ${opens(m.release_date)}`} />
                         : <p className="empty">Nothing in {strandName} opens soon.</p>}
                 </section>
 
                 <section className="block wrap" aria-labelledby="buzz">
-                    <Heading id="buzz" local="Lagi ramai" english="Everyone's talking about" />
+                    <Heading id="buzz" local="Everyone's talking" english="Trending today" />
                     {loaded && <Billboards movies={inStrand(lists.trending)} limit={8} />}
                 </section>
 
                 <section className="block wrap" aria-labelledby="best">
-                    <Heading id="best" local="Terbaik sepanjang masa" english="Best of all time, by audience vote" />
+                    <Heading id="best" local="Best of all time" english="By audience vote" />
                     {loaded && top.length > 0 && (
                         <ProgrammeList
                             ranked
@@ -139,17 +139,17 @@ const Home = () => {
                             items={top.map((m) => ({
                                 key: m.id, to: `/movies/${m.id}`, title: m.title,
                                 image: m.poster_path && `https://image.tmdb.org/t/p/w500${m.poster_path}`,
-                                meta: [m.release_date?.slice(0, 4), `Nilai ${m.vote_average.toFixed(1)}`],
+                                meta: [m.release_date?.slice(0, 4), `Rated ${m.vote_average.toFixed(1)}`],
                             }))}
                         />
                     )}
                 </section>
 
                 <section className="block wrap" aria-labelledby="find">
-                    <Heading id="find" local="Cari film" english="Find any film" />
+                    <Heading id="find" local="Find a film" english="Search every title" />
                     <div className="archive">
                         <FiSearch aria-hidden="true" />
-                        <input type="search" aria-label="Film title" placeholder="Judul film… e.g. Pengabdi Setan" value={query} onChange={(e) => setQuery(e.target.value)} />
+                        <input type="search" aria-label="Film title" placeholder="Film title, e.g. Satan's Slaves" value={query} onChange={(e) => setQuery(e.target.value)} />
                         {query && <button className="icon-btn" onClick={() => setQuery('')} aria-label="Clear the search"><FiX /></button>}
                     </div>
                     {searched && results.length === 0 && <p className="empty">Nothing called "{query}". Try the original title.</p>}
