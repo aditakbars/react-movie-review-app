@@ -36,7 +36,7 @@ const About = () => {
                             <h2>🎬</h2>
                             <img
                                 className="profile-img"
-                                src="https://storage.googleapis.com/profile-page-nih.appspot.com/profile.png"
+                                src="/images/adit-akbars.webp"
                                 alt="Adit Akbars"
                             />
                             <p style={{ margin: 0, fontFamily: 'Inter', fontSize: '0.95em', color: '#b0c0d0', textAlign: 'center', textIndent: 0 }}>
