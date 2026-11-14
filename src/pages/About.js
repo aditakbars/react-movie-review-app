@@ -19,7 +19,7 @@ const About = () => (
         <main id="main" className="wrap">
             <article className="profile">
                 <div className="profile__photo">
-                    <img src="https://storage.googleapis.com/profile-page-nih.appspot.com/profile.png" alt="Adit Akbars" />
+                    <img src="/images/adit-akbars.webp" alt="Adit Akbars" />
                 </div>
                 <div className="profile__text">
                     <h1>About this cinema</h1>
