@@ -1,12 +1,22 @@
 import React from 'react';
-import "../App.css";
+import { Link } from 'react-router-dom';
+import '../App.css';
 
-const Footer = () => {
-    return (
-        <footer>
-            <p>Cooked up with passion (and a pinch of silliness) by Adit Akbars © 2025</p>
-        </footer>
-    );
-}
+const Footer = () => (
+    <footer className="colophon">
+        <div className="wrap colophon__inner">
+            <p className="colophon__mark">Adit's Cinema</p>
+            <ul className="colophon__links">
+                <li><Link to="/">Programme</Link></li>
+                <li><Link to="/reviews">Reviews</Link></li>
+                <li><Link to="/about">About</Link></li>
+            </ul>
+            <p className="colophon__note">
+                Programmed and reviewed by Adit Akbars, © 2026. Film data and images from TMDb; this site is
+                not endorsed or certified by TMDb. Streaming listings by JustWatch.
+            </p>
+        </div>
+    </footer>
+);
 
 export default Footer;

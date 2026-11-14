@@ -1,25 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { FiX } from 'react-icons/fi';
 import '../App.css';
 
-const TrailerModal = ({ videoKey, onClose }) => {
+const TrailerModal = ({ videoKey, title, onClose }) => {
+    const closeRef = useRef(null);
     useEffect(() => {
-        const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
-        document.addEventListener('keydown', handleKey);
+        const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+        document.addEventListener('keydown', onKey);
         document.body.style.overflow = 'hidden';
-        return () => {
-            document.removeEventListener('keydown', handleKey);
-            document.body.style.overflow = '';
-        };
+        closeRef.current?.focus();
+        return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
     }, [onClose]);
 
     return (
-        <div className='modal-overlay' onClick={onClose}>
-            <div className='modal-inner' onClick={(e) => e.stopPropagation()}>
-                <button className='modal-close' onClick={onClose}>✕</button>
+        <div className="screening" role="dialog" aria-modal="true" aria-label={`${title || 'Film'} trailer`} onClick={onClose}>
+            <div className="screening__frame" onClick={(e) => e.stopPropagation()}>
+                <button ref={closeRef} className="screening__close" onClick={onClose}>Close <FiX aria-hidden="true" /></button>
                 <iframe
-                    className='modal-iframe'
                     src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&rel=0`}
-                    title="Movie Trailer"
+                    title={`${title || 'Film'} trailer`}
                     allow="autoplay; encrypted-media; fullscreen"
                     allowFullScreen
                 />
