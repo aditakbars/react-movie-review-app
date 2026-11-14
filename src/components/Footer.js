@@ -7,13 +7,13 @@ const Footer = () => (
         <div className="wrap colophon__inner">
             <p className="colophon__mark">Adit's Cinema</p>
             <ul className="colophon__links">
-                <li><Link to="/">Programme</Link></li>
+                <li><Link to="/">Films</Link></li>
                 <li><Link to="/reviews">Reviews</Link></li>
                 <li><Link to="/about">About</Link></li>
             </ul>
             <p className="colophon__note">
-                Programmed and reviewed by Adit Akbars, © 2026. Film data and images from TMDb; this site is
-                not endorsed or certified by TMDb. Streaming listings by JustWatch.
+                Dilukis dengan tangan, kira-kira. Reviews by Adit Akbars, © 2026. Film data and images from TMDb;
+                this site is not endorsed or certified by TMDb. Streaming listings by JustWatch.
             </p>
         </div>
     </footer>

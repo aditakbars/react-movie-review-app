@@ -5,7 +5,7 @@ import { FiAlertCircle, FiArrowLeft, FiPlay, FiExternalLink } from 'react-icons/
 import '../App.css';
 
 import MovieCard from '../components/MovieCard';
-import MovieList from '../components/MovieList';
+import Billboards from '../components/Billboards';
 import CastRow from '../components/CastRow';
 import WatchProviders from '../components/WatchProviders';
 import TrailerModal from '../components/TrailerModal';
@@ -96,14 +96,14 @@ const MovieDetail = () => {
 
                 {movie?.recommendations?.results?.length > 0 && (
                     <section className="block">
-                        <div className="block__head"><h2>On the same bill</h2></div>
-                        <MovieList movies={movie.recommendations.results} limit={8} />
+                        <div className="block__head"><h2>Mirip ini</h2><p lang="en" className="block__en">If you liked it</p></div>
+                        <Billboards movies={movie.recommendations.results} limit={8} />
                     </section>
                 )}
                 {movie?.similar?.results?.length > 0 && (
                     <section className="block">
-                        <div className="block__head"><h2>Related films</h2></div>
-                        <MovieList movies={movie.similar.results} limit={8} />
+                        <div className="block__head"><h2>Film serupa</h2><p lang="en" className="block__en">Related films</p></div>
+                        <Billboards movies={movie.similar.results} limit={8} />
                     </section>
                 )}
 

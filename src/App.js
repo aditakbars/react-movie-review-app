@@ -1,13 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import '@fontsource/big-shoulders-display/600';
-import '@fontsource/big-shoulders-display/700';
-import '@fontsource/big-shoulders-display/800';
-import '@fontsource/newsreader/400';
-import '@fontsource/newsreader/400-italic';
-import '@fontsource/newsreader/500';
-import '@fontsource/newsreader/600';
+import '@fontsource/bowlby-one/400';
+import '@fontsource/archivo/400';
+import '@fontsource/archivo/400-italic';
+import '@fontsource/archivo/600';
+import '@fontsource/archivo/800';
 import './Styles.css';
 
 import Home from './pages/Home';
