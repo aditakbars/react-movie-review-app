@@ -13,6 +13,8 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { cachedReviews, loadReviews, reviewForImdb } from '../api/reviews';
+import CriticScores from '../components/CriticScores';
+import { REGIONS, regionalRelease, useRegion } from '../region';
 
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
 const TMDB_BASE = 'https://api.themoviedb.org/3';
@@ -25,6 +27,7 @@ const MovieDetail = () => {
     const [error, setError] = useState(null);
     const [showTrailer, setShowTrailer] = useState(false);
     const [myReview, setMyReview] = useState(null);
+    const [region] = useRegion();
 
     // Did Adit review this one? Cached list first, then the fresh one.
     useEffect(() => {
@@ -50,8 +53,8 @@ const MovieDetail = () => {
     const videos = movie?.videos?.results || [];
     const trailer = videos.find((v) => v.type === 'Trailer' && v.official && v.site === 'YouTube')
         || videos.find((v) => v.type === 'Trailer' && v.site === 'YouTube') || videos.find((v) => v.site === 'YouTube');
-    const cert = (movie?.release_dates?.results || []).find((r) => r.iso_3166_1 === 'US')
-        ?.release_dates?.find((rd) => rd.certification)?.certification;
+    const local = regionalRelease(movie, region);
+    const cert = local.cert;
     const runtime = movie?.runtime > 0 ? `${Math.floor(movie.runtime / 60)}h ${String(movie.runtime % 60).padStart(2, '0')}m` : null;
 
     return (
@@ -73,7 +76,7 @@ const MovieDetail = () => {
                             <h1>{movie.title}</h1>
                             <p className="note__line">
                                 {[movie.release_date?.slice(0, 4), runtime, movie.genres?.map((g) => g.name).join(', ')].filter(Boolean).map((t, i) => <span key={i}>{t}</span>)}
-                                {cert && <span className="cert" title="US rating">{cert}</span>}
+                                {cert && <span className="cert" title={`${REGIONS[local.certRegion].board} rating, ${REGIONS[local.certRegion].short}`}>{local.certRegion !== region ? `US ${cert}` : cert}</span>}
                             </p>
                             <div className="note__actions">
                                 {trailer && <button className="btn" onClick={() => setShowTrailer(true)}><FiPlay aria-hidden="true" /> Play the trailer</button>}
@@ -88,8 +91,8 @@ const MovieDetail = () => {
                         <div className="note__grid">
                             <aside className="note__side">
                                 {movie.poster_path && <img className="note__poster" src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} srcSet={`https://image.tmdb.org/t/p/w342${movie.poster_path} 342w, https://image.tmdb.org/t/p/w500${movie.poster_path} 500w`} sizes="(max-width: 639px) 220px, 320px" width="500" height="750" loading="lazy" alt={`${movie.title} poster`} />}
-                                <MovieCard movie={movie} crew={crew} />
-                                <WatchProviders providers={movie['watch/providers']?.results} />
+                                <MovieCard movie={movie} crew={crew} region={region} localDate={local.date} />
+                                <WatchProviders providers={movie['watch/providers']?.results} region={region} />
                             </aside>
                             <div className="note__body">
                                 {myReview && (
@@ -101,6 +104,7 @@ const MovieDetail = () => {
                                 )}
                                 {movie.tagline && <p className="note__tagline">{movie.tagline}</p>}
                                 {movie.overview && <p className="note__overview">{movie.overview}</p>}
+                                <CriticScores imdbId={movie.imdb_id} />
                                 {cast.length > 0 && (
                                     <section aria-labelledby="cast-title">
                                         <h2 id="cast-title" className="note__h2">Cast</h2>

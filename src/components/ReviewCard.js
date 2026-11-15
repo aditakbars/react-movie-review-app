@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FiArrowRight, FiExternalLink } from 'react-icons/fi';
 import '../App.css';
 import ReviewContent from './ReviewContent';
+import CriticScores from './CriticScores';
 import { findFilm, readingTime } from '../api/reviews';
 
 const ReviewCard = ({ review }) => {
@@ -29,6 +30,7 @@ const ReviewCard = ({ review }) => {
             <img className="review__poster" src={review.poster_url} alt={`${review.movie_title} poster`} />
             <ReviewContent title={review.movie_title} content={review.review_content} stills={review.movie_stills} />
             <div className="review__end">
+                <CriticScores imdbId={review.imdb_id} heading="What the critics said" />
                 {film && (
                     <Link className="review__film-link" to={`/movies/${film.id}`}>
                         <span className="review__film-link-label">The film</span>

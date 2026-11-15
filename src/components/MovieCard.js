@@ -5,7 +5,7 @@ import '../App.css';
 const fmt = (n) => (n >= 1e9 ? `$${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `$${Math.round(n / 1e6)}M` : `$${n.toLocaleString()}`);
 
 // The programme card: the film's facts as a credits block.
-const MovieCard = ({ movie, crew }) => {
+const MovieCard = ({ movie, crew, region = 'US', localDate }) => {
     if (!movie) return null;
     const director = crew.filter((c) => c.job === 'Director');
     const writers = crew.filter((c) => c.department === 'Writing').slice(0, 3);
@@ -17,6 +17,7 @@ const MovieCard = ({ movie, crew }) => {
         director.length > 0 && ['Directed by', people(director)],
         writers.length > 0 && ['Written by', people(writers)],
         movie.release_date && ['Released', new Date(movie.release_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })],
+        localDate && localDate !== movie.release_date && [region === 'ID' ? 'In Indonesia' : 'In the US', new Date(localDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })],
         movie.production_countries?.length > 0 && ['Country', movie.production_countries.map((c) => c.name).join(', ')],
         movie.vote_average > 0 && ['Audience', <span><span className="num">{movie.vote_average.toFixed(1)}</span> / 10, {movie.vote_count?.toLocaleString()} votes</span>],
         movie.budget > 0 && ['Budget', <span className="num">{fmt(movie.budget)}</span>],

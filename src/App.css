@@ -436,3 +436,39 @@ img { display: block; max-width: 100%; }
 /* ── Offline strip ── */
 .offline { background: var(--yellow); color: var(--edge); font-weight: 700; font-size: 14px; padding: 8px 0; border-top: 2px solid var(--edge); }
 .offline .wrap { display: block; }
+
+/* ── Region switch ── */
+.mast__side { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+.region { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.region__label { font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: 12px; color: var(--muted); margin-right: 4px; }
+.region button { min-height: 36px; padding: 4px 12px; border: 2px solid var(--line); border-radius: 3px; background: var(--wall-2); color: var(--ink-2); font-weight: 700; font-size: 14px; cursor: pointer; transition: background-color 140ms var(--ease-out), color 140ms var(--ease-out); }
+.region button[aria-pressed="true"] { background: var(--pick-bg); color: var(--pick-ink); border-color: var(--pick-bg); }
+.showing .region { margin: 4px 0 12px; }
+.showing__none { color: var(--muted); font-size: 15px; padding: 8px 0; border-top: 2px dotted var(--timber-2); }
+@media (hover: hover) and (pointer: fine) {
+  .region button:not([aria-pressed="true"]):hover { border-color: var(--hi); color: var(--ink); }
+}
+@media (max-width: 639px) {
+  .mast__side { align-items: flex-start; }
+}
+
+/* ── Critics' scores (OMDb) ── */
+.critics { display: flex; flex-direction: column; gap: 12px; }
+.critics__head { font-family: var(--sign); font-weight: 400; text-transform: uppercase; font-size: 22px; line-height: 1; }
+.critics__plates { display: flex; flex-wrap: wrap; gap: 12px; }
+.critics__plate { display: flex; flex-direction: column; gap: 2px; min-width: 132px; padding: 10px 14px 8px; background: var(--panel); border: 3px solid var(--line); box-shadow: 4px 4px 0 var(--lift); }
+.critics__value { font-family: var(--sign); font-size: 34px; line-height: 1; color: var(--hi); text-shadow: 2px 2px 0 var(--hi-shadow); }
+.critics__name { font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+.critics__unit { font-weight: 600; color: var(--muted); text-transform: none; letter-spacing: 0; }
+.mast__side .region { flex-wrap: nowrap; }
+@media (max-width: 639px) {
+  .mast__side .region { flex-wrap: wrap; }
+  .mast__side .region__label { flex-basis: 100%; }
+}
+@media (max-width: 639px) {
+  .mast__count { white-space: normal; }
+}
+@media (max-width: 379px) {
+  .bar__brand { font-size: 15px; }
+  .bar__links a { padding: 8px 5px; font-size: 12px; }
+}

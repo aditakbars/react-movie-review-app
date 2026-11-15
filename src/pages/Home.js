@@ -9,6 +9,8 @@ import ProgrammeList from '../components/ProgrammeList';
 import LoadingSpinner from '../components/LoadingSpinner';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
+import RegionSwitch from '../components/RegionSwitch';
+import { REGIONS, useRegion } from '../region';
 
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
 const TMDB_BASE = 'https://api.themoviedb.org/3';
@@ -22,7 +24,8 @@ const Heading = ({ id, local, english }) => (
 );
 
 const Home = () => {
-    const [lists, setLists] = useState({ now: [], trending: [], upcoming: [], top: [] });
+    const [region] = useRegion();
+    const [lists, setLists] = useState({ now: [], trending: [], upcoming: [], top: [], local: [] });
     const [loaded, setLoaded] = useState(false);
     const [genres, setGenres] = useState([]);
     const [strand, setStrand] = useState(null);
@@ -34,16 +37,21 @@ const Home = () => {
     useEffect(() => {
         const get = (path, params = {}) =>
             axios.get(`${TMDB_BASE}${path}`, { params: { api_key: TMDB_KEY, language: 'en-US', ...params } });
+        const today = new Date().toISOString().slice(0, 10);
+        const daysFrom = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
         Promise.all([
-            get('/movie/now_playing'), get('/trending/movie/day'),
-            get('/discover/movie', { sort_by: 'popularity.desc', 'primary_release_date.gte': new Date().toISOString().slice(0, 10), with_release_type: '2|3' }),
+            get('/movie/now_playing', { region }), get('/trending/movie/day'),
+            get('/discover/movie', { region, sort_by: 'popularity.desc', 'release_date.gte': today, with_release_type: '2|3' }),
             get('/movie/top_rated'), get('/genre/movie/list'),
-        ]).then(([now, trending, upcoming, top, g]) => {
-            setLists({ now: now.data.results, trending: trending.data.results, upcoming: upcoming.data.results, top: top.data.results });
+            region === 'ID'
+                ? get('/discover/movie', { region, with_original_language: 'id', sort_by: 'popularity.desc', 'release_date.gte': daysFrom(-120), 'release_date.lte': daysFrom(90), with_release_type: '2|3' })
+                : Promise.resolve({ data: { results: [] } }),
+        ]).then(([now, trending, upcoming, top, g, local]) => {
+            setLists({ now: now.data.results, trending: trending.data.results, upcoming: upcoming.data.results, top: top.data.results, local: local.data.results });
             setGenres(g.data.genres);
         }).catch(() => setError('The film boards did not load. Check your connection, then refresh the page.'))
           .finally(() => setLoaded(true));
-    }, []);
+    }, [region]);
 
     const search = useCallback(async (q) => {
         if (!q.trim()) { setResults([]); setSearched(false); return; }
@@ -77,7 +85,10 @@ const Home = () => {
                     <h1 className="mast__name">Adit's Cinema</h1>
                     <div className="mast__rule">
                         <p className="mast__lede">Film reviews written in Bahasa Indonesia, hung beside everything on screen this week. Honest, sometimes goofy, never professional.</p>
-                        <p className="mast__count">{loaded && lists.now.length > 0 && <><span className="num">{lists.now.length}</span> films showing</>}</p>
+                        <div className="mast__side">
+                            <p className="mast__count">{loaded && lists.now.length > 0 && <><span className="num">{lists.now.length}</span> films showing in {REGIONS[region].name}</>}</p>
+                            <RegionSwitch />
+                        </div>
                     </div>
                 </header>
                 <section className="facade" aria-labelledby="feature-title">
@@ -112,7 +123,7 @@ const Home = () => {
                 )}
 
                 <section className="block wrap" aria-labelledby="now">
-                    <Heading id="now" local="Now showing" english="In cinemas this week" />
+                    <Heading id="now" local="Now showing" english={`In ${region === 'ID' ? 'Indonesian' : 'US'} cinemas this week`} />
                     {genres.length > 0 && (
                         <div className="strands" role="group" aria-label="Filter by genre">
                             <button aria-pressed={strand === null} onClick={() => setStrand(null)}>All</button>
@@ -131,11 +142,18 @@ const Home = () => {
                 </section>
 
                 <section className="block wrap" aria-labelledby="soon">
-                    <Heading id="soon" local="Coming soon" english="Opening in the weeks ahead" />
+                    <Heading id="soon" local="Coming soon" english={`Opening in ${REGIONS[region].name} in the weeks ahead`} />
                     {!loaded ? <LoadingSpinner /> : upcoming.length
                         ? <Billboards movies={upcoming} limit={8} note={(m) => `Opens ${opens(m.release_date)}`} />
                         : <p className="empty">Nothing in {strandName} opens soon.</p>}
                 </section>
+
+                {region === 'ID' && loaded && inStrand(lists.local).some((m) => m.poster_path) && (
+                    <section className="block wrap" aria-labelledby="local">
+                        <Heading id="local" local="Made in Indonesia" english="Indonesian films in cinemas now and opening soon" />
+                        <Billboards movies={inStrand(lists.local)} limit={8} note={(m) => (m.release_date > new Date().toISOString().slice(0, 10) ? `Opens ${opens(m.release_date)}` : m.release_date?.slice(0, 4))} />
+                    </section>
+                )}
 
                 <section className="block wrap" aria-labelledby="buzz">
                     <Heading id="buzz" local="Everyone's talking" english="Trending today" />
