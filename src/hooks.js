@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { cachedReviews, loadReviews, findFilm, reviewedFilms } from './api/reviews';
+import { loadDiary, indexByFilm } from './api/letterboxd';
 
 /* Cached reviews at once, then the fresh list. `slow` flips on if the server is asleep and nothing is cached. */
 export const useReviews = () => {
@@ -51,4 +52,17 @@ export const useReviewed = () => {
         return () => { alive = false; };
     }, []);
     return map;
+};
+
+/* Adit's Letterboxd diary: entries newest first, and a TMDb id -> latest entry map. */
+export const useDiary = () => {
+    const [diary, setDiary] = useState({ entries: [], byFilm: new Map(), profileUrl: null, loaded: false });
+    useEffect(() => {
+        let alive = true;
+        loadDiary().then((d) => alive && setDiary({
+            entries: d.entries || [], byFilm: indexByFilm(d.entries || []), profileUrl: d.profileUrl, updated: d.updated, loaded: true,
+        }));
+        return () => { alive = false; };
+    }, []);
+    return diary;
 };

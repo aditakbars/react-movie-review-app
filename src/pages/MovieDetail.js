@@ -15,7 +15,8 @@ import Footer from '../components/Footer';
 import { cachedReviews, loadReviews, reviewForImdb } from '../api/reviews';
 import CriticScores from '../components/CriticScores';
 import Stills from '../components/Stills';
-import { useTitle } from '../hooks';
+import LetterboxdTake from '../components/LetterboxdTake';
+import { useTitle, useDiary } from '../hooks';
 import { REGIONS, regionalRelease, useRegion } from '../region';
 
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
@@ -30,6 +31,7 @@ const MovieDetail = () => {
     const [showTrailer, setShowTrailer] = useState(false);
     const [myReview, setMyReview] = useState(null);
     const [region] = useRegion();
+    const { byFilm } = useDiary();
     const [series, setSeries] = useState(null);
     const [inEnglish, setInEnglish] = useState(false);
 
@@ -145,6 +147,7 @@ const MovieDetail = () => {
                                         )}
                                     </div>
                                 )}
+                                <LetterboxdTake entry={byFilm.get(movie.id)} />
                                 <CriticScores imdbId={movie.imdb_id} audience={movie.vote_average} />
                                 {keywords.length > 0 && (
                                     <ul className="tags" aria-label="Keywords">

@@ -50,6 +50,12 @@ registerRoute(
   })
 );
 
+// The Letterboxd diary file: fresh when online, the last copy when not.
+registerRoute(
+  ({ url }) => url.origin === self.location.origin && url.pathname === '/letterboxd.json',
+  new NetworkFirst({ cacheName: 'diary', networkTimeoutSeconds: 4 })
+);
+
 // Our own images (the About portrait, icons).
 registerRoute(
   ({ url }) => url.origin === self.location.origin && /\.(png|webp|jpg|svg|ico)$/.test(url.pathname),

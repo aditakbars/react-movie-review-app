@@ -1,0 +1,74 @@
+# Daily: pull Adit's Letterboxd diary, save it in the repo, and redeploy the
+# site to Firebase if anything changed. Also runs on demand from the Actions tab.
+#
+# Needs three repository secrets (Settings → Secrets and variables → Actions):
+#   TMDB_KEY                  your TMDb API key (same as REACT_APP_TMDB_KEY in .env)
+#   OMDB_KEY                  your OMDb API key (same as REACT_APP_OMDB_KEY in .env)
+#   FIREBASE_SERVICE_ACCOUNT  a Firebase service-account key (JSON) allowed to deploy Hosting
+name: Letterboxd diary
+
+on:
+  schedule:
+    - cron: '17 22 * * *'   # 05:17 in Jakarta, every day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: letterboxd-diary
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Fetch the diary
+        run: node scripts/fetch-letterboxd.js
+        env:
+          REACT_APP_TMDB_KEY: ${{ secrets.TMDB_KEY }}
+
+      - name: Anything new?
+        id: diff
+        run: |
+          if git diff --quiet -- public/letterboxd.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No new diary entries today."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Save the diary to the repo
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "letterboxd-diary-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/letterboxd.json
+          git commit -m "Update Letterboxd diary"
+          git push
+
+      - name: Build the site
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          npm ci
+          npm run build
+        env:
+          CI: true
+          REACT_APP_TMDB_KEY: ${{ secrets.TMDB_KEY }}
+          REACT_APP_OMDB_KEY: ${{ secrets.OMDB_KEY }}
+
+      - name: Deploy to Firebase Hosting
+        if: steps.diff.outputs.changed == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: react-movie-review-app
+          channelId: live

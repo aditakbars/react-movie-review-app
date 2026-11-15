@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../App.css';
-import { useReviewed } from '../hooks';
+import { useReviewed, useDiary } from '../hooks';
+import Stars from './Stars';
 
 /*
   The signature: films set as a printed programme listing. Hovering or focusing a
@@ -11,6 +12,7 @@ import { useReviewed } from '../hooks';
 const ProgrammeList = ({ items, ranked = false, label }) => {
     const [active, setActive] = useState(0);
     const reviewed = useReviewed();
+    const { byFilm } = useDiary();
     if (!items.length) return null;
     const shown = Math.min(active, items.length - 1);
 
@@ -32,6 +34,7 @@ const ProgrammeList = ({ items, ranked = false, label }) => {
                             <span className="prog__text">
                                 <span className="prog__title">{it.title}</span>
                                 {it.tmdbId && reviewed.has(it.tmdbId) && <span className="prog__badge">Reviewed</span>}
+                                {it.tmdbId && byFilm.get(it.tmdbId)?.rating && <span className="prog__stars">Adit <Stars rating={byFilm.get(it.tmdbId).rating} /></span>}
                                 {it.sub && <span className="prog__sub">{it.sub}</span>}
                             </span>
                             <span className="prog__meta">

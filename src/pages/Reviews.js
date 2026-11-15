@@ -1,5 +1,6 @@
 import React from 'react';
-import { FiAlertCircle } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { FiAlertCircle, FiArrowRight } from 'react-icons/fi';
 import '../App.css';
 
 import ReviewList from '../components/ReviewList';
@@ -25,6 +26,7 @@ const Reviews = () => {
                         Written in Bahasa Indonesia, so keep your expectations of my prose modest. I'm not a critic:
                         these are candid notes on films I've watched, unpretentious and occasionally goofy.
                     </p>
+                    <Link className="arrow-link" to="/diary">Shorter takes, in English: my Letterboxd diary <FiArrowRight aria-hidden="true" /></Link>
                 </header>
                 {error && !has && (
                     <p className="alert" role="alert"><FiAlertCircle aria-hidden="true" /> {navigator.onLine === false ? "You're offline, and this device hasn't saved the reviews yet." : 'The reviews did not load. The server may still be waking; refresh in a moment.'}</p>

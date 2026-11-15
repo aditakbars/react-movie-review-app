@@ -12,7 +12,8 @@ import Footer from '../components/Footer';
 import RegionSwitch from '../components/RegionSwitch';
 import StreamingNow from '../components/StreamingNow';
 import CastRow from '../components/CastRow';
-import { useTitle } from '../hooks';
+import { useTitle, useDiary } from '../hooks';
+import RecentlyWatched from '../components/RecentlyWatched';
 import { REGIONS, useRegion } from '../region';
 
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
@@ -29,6 +30,7 @@ const Heading = ({ id, local, english }) => (
 const Home = () => {
     const [region] = useRegion();
     useTitle(null);
+    const diary = useDiary();
     const [lists, setLists] = useState({ now: [], trending: [], upcoming: [], top: [], local: [] });
     const [loaded, setLoaded] = useState(false);
     const [genres, setGenres] = useState([]);
@@ -159,6 +161,14 @@ const Home = () => {
                         }))} />
                         : <p className="empty">No {strandName} films are showing this week. <button className="text-btn" onClick={() => setStrand(null)}>Show them all</button></p>}
                 </section>
+
+                {diary.entries.length > 0 && (
+                    <section className="block wrap" aria-labelledby="watched">
+                        <Heading id="watched" local="Recently watched" english="Adit's latest logs on Letterboxd" />
+                        <RecentlyWatched entries={diary.entries} />
+                        <p className="more"><Link className="arrow-link" to="/diary">The whole diary <FiArrowRight aria-hidden="true" /></Link></p>
+                    </section>
+                )}
 
                 <section className="block wrap" aria-labelledby="soon">
                     <Heading id="soon" local="Coming soon" english={`Opening in ${REGIONS[region].name} in the weeks ahead`} />

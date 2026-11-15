@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../App.css';
-import { useReviewed } from '../hooks';
+import { useReviewed, useDiary } from '../hooks';
+import { starLabel, starText } from '../api/letterboxd';
 
 /*
   Films hung as cinema-front billboards. Each board hangs from its top edge;
@@ -11,6 +12,7 @@ import { useReviewed } from '../hooks';
 */
 const Billboards = ({ movies, lead = false, limit = 12, note, current }) => {
     const reviewed = useReviewed();
+    const { byFilm } = useDiary();
     return (
         <ul className={`boards${lead ? ' boards--lead' : ''}`}>
             {movies.filter((m) => m.poster_path).slice(0, limit).map((m, i) => {
@@ -25,6 +27,7 @@ const Billboards = ({ movies, lead = false, limit = 12, note, current }) => {
                                 loading={i < 4 ? 'eager' : 'lazy'}
                             />
                             {reviewed.has(m.id) && <span className="board__badge">Reviewed</span>}
+                            {byFilm.get(m.id)?.rating && <span className="board__stars" title={`Adit on Letterboxd: ${starLabel(byFilm.get(m.id).rating)}`}><span aria-hidden="true">{starText(byFilm.get(m.id).rating)}</span><span className="sr-only">Adit rated it {starLabel(byFilm.get(m.id).rating)}</span></span>}
                             {here && <span className="board__badge board__badge--here">You are here</span>}
                         </span>
                         <span className="board__plate">

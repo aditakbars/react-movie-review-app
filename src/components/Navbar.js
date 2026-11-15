@@ -14,6 +14,7 @@ const NavBar = () => (
                 <ul className="bar__links">
                     <li><NavLink to="/" end>Films</NavLink></li>
                     <li><NavLink to="/reviews">Reviews</NavLink></li>
+                    <li className="bar__wide"><NavLink to="/diary">Diary</NavLink></li>
                     <li><NavLink to="/about">About</NavLink></li>
                 </ul>
             </nav>
