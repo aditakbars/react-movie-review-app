@@ -10,6 +10,9 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RegionSwitch from '../components/RegionSwitch';
+import StreamingNow from '../components/StreamingNow';
+import CastRow from '../components/CastRow';
+import { useTitle } from '../hooks';
 import { REGIONS, useRegion } from '../region';
 
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
@@ -25,12 +28,14 @@ const Heading = ({ id, local, english }) => (
 
 const Home = () => {
     const [region] = useRegion();
+    useTitle(null);
     const [lists, setLists] = useState({ now: [], trending: [], upcoming: [], top: [], local: [] });
     const [loaded, setLoaded] = useState(false);
     const [genres, setGenres] = useState([]);
     const [strand, setStrand] = useState(null);
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
+    const [people, setPeople] = useState([]);
     const [searched, setSearched] = useState(false);
     const [error, setError] = useState(null);
 
@@ -54,10 +59,24 @@ const Home = () => {
     }, [region]);
 
     const search = useCallback(async (q) => {
-        if (!q.trim()) { setResults([]); setSearched(false); return; }
+        if (!q.trim()) { setResults([]); setPeople([]); setSearched(false); return; }
         try {
-            const r = await axios.get(`${TMDB_BASE}/search/movie`, { params: { api_key: TMDB_KEY, query: q, include_adult: false } });
-            setResults(r.data.results);
+            const params = { api_key: TMDB_KEY, query: q, include_adult: false };
+            const [films, persons] = await Promise.all([
+                axios.get(`${TMDB_BASE}/search/movie`, { params }),
+                axios.get(`${TMDB_BASE}/search/person`, { params }),
+            ]);
+            setResults(films.data.results);
+            // Only people known for something, best known first.
+            setPeople(persons.data.results
+                .filter((p) => p.known_for?.length || p.profile_path)
+                .sort((a, b) => b.popularity - a.popularity)
+                .slice(0, 6)
+                .map((p) => ({
+                    id: p.id, name: p.name, profile_path: p.profile_path,
+                    character: [p.known_for_department === 'Acting' ? 'Actor' : p.known_for_department,
+                        (p.known_for || []).map((k) => k.title || k.name).filter(Boolean).slice(0, 2).join(', ')].filter(Boolean).join(' · '),
+                })));
             setSearched(true);
         } catch {
             setError('The search did not go through. Try again in a moment.');
@@ -134,7 +153,7 @@ const Home = () => {
                     )}
                     {!loaded ? <LoadingSpinner /> : now.length
                         ? <ProgrammeList label="Now showing" items={now.map((m) => ({
-                            key: m.id, to: `/movies/${m.id}`, title: m.title,
+                            key: m.id, tmdbId: m.id, to: `/movies/${m.id}`, title: m.title,
                             image: m.poster_path && `https://image.tmdb.org/t/p/w500${m.poster_path}`,
                             meta: [(m.genre_ids || []).slice(0, 2).map((id) => genreName[id]).filter(Boolean).join(', '), m.release_date?.slice(0, 4), m.vote_average > 0 && m.vote_average.toFixed(1)],
                         }))} />
@@ -155,6 +174,11 @@ const Home = () => {
                     </section>
                 )}
 
+                <section className="block wrap" aria-labelledby="stream">
+                    <Heading id="stream" local="Streaming tonight" english={`What's on at home in ${REGIONS[region].name}`} />
+                    <StreamingNow region={region} genre={strand} />
+                </section>
+
                 <section className="block wrap" aria-labelledby="buzz">
                     <Heading id="buzz" local="Everyone's talking" english="Trending today" />
                     {loaded && <Billboards movies={inStrand(lists.trending)} limit={8} />}
@@ -167,7 +191,7 @@ const Home = () => {
                             ranked
                             label="Best of all time"
                             items={top.map((m) => ({
-                                key: m.id, to: `/movies/${m.id}`, title: m.title,
+                                key: m.id, tmdbId: m.id, to: `/movies/${m.id}`, title: m.title,
                                 image: m.poster_path && `https://image.tmdb.org/t/p/w500${m.poster_path}`,
                                 meta: [m.release_date?.slice(0, 4), `Rated ${m.vote_average.toFixed(1)}`],
                             }))}
@@ -176,14 +200,25 @@ const Home = () => {
                 </section>
 
                 <section className="block wrap" aria-labelledby="find">
-                    <Heading id="find" local="Find a film" english="Search every title" />
+                    <Heading id="find" local="Find a film" english="Search every title, actor and director" />
                     <div className="archive">
                         <FiSearch aria-hidden="true" />
-                        <input type="search" aria-label="Film title" placeholder="Film title, e.g. Satan's Slaves" value={query} onChange={(e) => setQuery(e.target.value)} />
+                        <input type="search" aria-label="Film title or person" placeholder="A film or a name, e.g. Joko Anwar" value={query} onChange={(e) => setQuery(e.target.value)} />
                         {query && <button className="icon-btn" onClick={() => setQuery('')} aria-label="Clear the search"><FiX /></button>}
                     </div>
-                    {searched && results.length === 0 && <p className="empty">Nothing called "{query}". Try the original title.</p>}
-                    {results.length > 0 && <Billboards movies={results} limit={16} />}
+                    {searched && results.length === 0 && people.length === 0 && <p className="empty">Nothing called "{query}". Try the original title, or a name.</p>}
+                    {people.length > 0 && (
+                        <div className="found">
+                            <h3 className="found__head">People</h3>
+                            <CastRow cast={people} />
+                        </div>
+                    )}
+                    {results.length > 0 && (
+                        <div className="found">
+                            {people.length > 0 && <h3 className="found__head">Films</h3>}
+                            <Billboards movies={results} limit={16} />
+                        </div>
+                    )}
                 </section>
             </main>
             <Footer />

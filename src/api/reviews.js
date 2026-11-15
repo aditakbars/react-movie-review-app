@@ -50,3 +50,19 @@ export const findFilm = async (imdbId) => {
 };
 
 export const reviewForImdb = (imdbId, list) => (list || []).find((r) => r.imdb_id && r.imdb_id === imdbId) || null;
+
+/* TMDb id -> review_id for every reviewed film, so posters anywhere can carry a "Reviewed" badge. */
+let reviewedMemo = null;
+export const reviewedFilms = () => {
+    if (!reviewedMemo) {
+        const fromList = (list) => Promise.all((list || []).filter((r) => r.imdb_id).map((r) =>
+            findFilm(r.imdb_id).then((f) => (f ? [f.id, r.review_id] : null)).catch(() => null)))
+            .then((pairs) => new Map(pairs.filter(Boolean)));
+        const cached = cachedReviews();
+        reviewedMemo = cached ? fromList(cached) : loadReviews().then(fromList);
+        // Refresh once the fresh list arrives (the cached one may be stale).
+        if (cached) loadReviews().then(fromList).then((m) => { reviewedMemo = Promise.resolve(m); }).catch(() => {});
+        reviewedMemo.catch(() => { reviewedMemo = null; });
+    }
+    return reviewedMemo;
+};

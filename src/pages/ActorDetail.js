@@ -9,6 +9,7 @@ import ProgrammeList from '../components/ProgrammeList';
 import LoadingSpinner from '../components/LoadingSpinner';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useTitle } from '../hooks';
 
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
 const TMDB_BASE = 'https://api.themoviedb.org/3';
@@ -22,6 +23,7 @@ const ActorDetail = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [fullBio, setFullBio] = useState(false);
+    useTitle(person?.name);
 
     useEffect(() => {
         setIsLoading(true);
@@ -86,7 +88,7 @@ const ActorDetail = () => {
                         <ProgrammeList
                             label={`Films with ${person?.name}`}
                             items={films.map((m) => ({
-                                key: m.id, to: `/movies/${m.id}`, title: m.title, sub: m.part,
+                                key: m.id, tmdbId: m.id, to: `/movies/${m.id}`, title: m.title, sub: m.part,
                                 image: `https://image.tmdb.org/t/p/w500${m.poster_path}`, meta: [m.release_date.slice(0, 4)],
                             }))}
                         />

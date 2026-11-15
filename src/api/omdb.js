@@ -6,7 +6,7 @@ import axios from 'axios';
   in localStorage and each film is only asked about once per device per week.
 */
 const KEY = process.env.REACT_APP_OMDB_KEY;
-const STORE = 'adits-cinema-omdb-v1';
+const STORE = 'adits-cinema-omdb-v2';
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 const read = () => { try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; } };
@@ -24,8 +24,9 @@ const shape = (d) => {
         imdb: d.imdbRating && d.imdbRating !== 'N/A' ? d.imdbRating : null,
         rt: src['Rotten Tomatoes'] || null,
         meta: d.Metascore && d.Metascore !== 'N/A' ? d.Metascore : null,
+        awards: d.Awards && d.Awards !== 'N/A' ? d.Awards : null,
     };
-    return scores.imdb || scores.rt || scores.meta ? scores : null;
+    return scores.imdb || scores.rt || scores.meta || scores.awards ? scores : null;
 };
 
 export const getCritics = async (imdbId) => {

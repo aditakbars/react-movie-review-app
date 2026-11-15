@@ -9,6 +9,7 @@ import WarmingUp from '../components/WarmingUp';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { cachedReview, loadReview } from '../api/reviews';
+import { useTitle } from '../hooks';
 
 const hasBody = (r) => (r && r.review_content ? r : null);
 
@@ -19,6 +20,7 @@ const ReviewDetail = () => {
     const [loading, setLoading] = useState(true);
     const [slow, setSlow] = useState(false);
     const [error, setError] = useState(false);
+    useTitle(review ? `${review.review_title} (${review.movie_title})` : 'Review');
 
     useEffect(() => {
         let alive = true;

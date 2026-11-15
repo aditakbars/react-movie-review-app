@@ -15,6 +15,7 @@ import Reviews from './pages/Reviews';
 import ReviewDetail from './pages/ReviewDetail';
 import About from './pages/About';
 import ActorDetail from './pages/ActorDetail';
+import KeywordFilms from './pages/KeywordFilms';
 
 function App() {
   // Nudge the sleeping reviews server awake on any first page, idle-time so it never competes with TMDb.
@@ -33,6 +34,7 @@ function App() {
           <Route path="/reviews/:id" element={<ReviewDetail />} />
           <Route path="/actors/:id"  element={<ActorDetail />} />
           <Route path="/about"       element={<About />} />
+          <Route path="/keywords/:id" element={<KeywordFilms />} />
         </Routes>
       </Router>
     </div>

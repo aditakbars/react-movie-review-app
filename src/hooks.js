@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { cachedReviews, loadReviews, findFilm } from './api/reviews';
+import { cachedReviews, loadReviews, findFilm, reviewedFilms } from './api/reviews';
 
 /* Cached reviews at once, then the fresh list. `slow` flips on if the server is asleep and nothing is cached. */
 export const useReviews = () => {
@@ -33,4 +33,22 @@ export const useFilms = (reviews) => {
         return () => { alive = false; };
     }, [ids]);
     return films;
+};
+
+/* "Fight Club · Adit's Cinema" in the browser tab; just the site name when there's no title yet. */
+export const useTitle = (title) => {
+    useEffect(() => {
+        document.title = title ? `${title} · Adit's Cinema` : "Adit's Cinema";
+    }, [title]);
+};
+
+/* Map of TMDb film id -> review_id for the films Adit has reviewed. */
+export const useReviewed = () => {
+    const [map, setMap] = useState(() => new Map());
+    useEffect(() => {
+        let alive = true;
+        reviewedFilms().then((m) => alive && setMap(m)).catch(() => {});
+        return () => { alive = false; };
+    }, []);
+    return map;
 };

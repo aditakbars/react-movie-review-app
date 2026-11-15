@@ -3,6 +3,7 @@ import { FaInstagram, FaLinkedin, FaYoutube, FaSpotify, FaGithub } from 'react-i
 import { SiLetterboxd } from 'react-icons/si';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useTitle } from '../hooks';
 
 const LINKS = [
     { href: 'https://letterboxd.com/aditjh/', label: 'Letterboxd', Icon: SiLetterboxd },
@@ -13,7 +14,9 @@ const LINKS = [
     { href: 'https://github.com/aditakbars', label: 'GitHub', Icon: FaGithub },
 ];
 
-const About = () => (
+const About = () => {
+    useTitle('About');
+    return (
     <div>
         <NavBar />
         <main id="main" className="wrap">
@@ -44,5 +47,6 @@ const About = () => (
         <Footer />
     </div>
 );
+};
 
 export default About;

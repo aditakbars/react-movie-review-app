@@ -7,9 +7,10 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import WarmingUp from '../components/WarmingUp';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { useReviews, useFilms } from '../hooks';
+import { useReviews, useFilms, useTitle } from '../hooks';
 
 const Reviews = () => {
+    useTitle('Reviews');
     const { reviews, loading, slow, error } = useReviews();
     const films = useFilms(reviews);
     const has = reviews?.length > 0;
