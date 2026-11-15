@@ -1,152 +1,167 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { FiAlertCircle, FiX, FiArrowRight, FiSearch } from 'react-icons/fi';
 import '../App.css';
 
-import MovieList from '../components/MovieList';
+import Billboards from '../components/Billboards';
+import ProgrammeList from '../components/ProgrammeList';
+import LoadingSpinner from '../components/LoadingSpinner';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
 const TMDB_BASE = 'https://api.themoviedb.org/3';
+const opens = (d) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) : '');
+
+const Heading = ({ id, local, english }) => (
+    <div className="sign">
+        <h2 id={id}>{local}</h2>
+        <p>{english}</p>
+    </div>
+);
 
 const Home = () => {
-    const [movies, setMovies] = useState([]);
-    const [trending, setTrending] = useState([]);
-    const [upcoming, setUpcoming] = useState([]);
-    const [topRated, setTopRated] = useState([]);
+    const [lists, setLists] = useState({ now: [], trending: [], upcoming: [], top: [] });
+    const [loaded, setLoaded] = useState(false);
     const [genres, setGenres] = useState([]);
-    const [selectedGenre, setSelectedGenre] = useState(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
-    const [hasSearched, setHasSearched] = useState(false);
+    const [strand, setStrand] = useState(null);
+    const [query, setQuery] = useState('');
+    const [results, setResults] = useState([]);
+    const [searched, setSearched] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchAll = async () => {
-            try {
-                const [nowPlaying, trendingRes, upcomingRes, topRatedRes, genreRes] = await Promise.all([
-                    axios.get(`${TMDB_BASE}/movie/now_playing`, { params: { api_key: TMDB_KEY, language: 'en-US' } }),
-                    axios.get(`${TMDB_BASE}/trending/movie/day`,  { params: { api_key: TMDB_KEY } }),
-                    axios.get(`${TMDB_BASE}/movie/upcoming`,      { params: { api_key: TMDB_KEY, language: 'en-US' } }),
-                    axios.get(`${TMDB_BASE}/movie/top_rated`,     { params: { api_key: TMDB_KEY, language: 'en-US' } }),
-                    axios.get(`${TMDB_BASE}/genre/movie/list`,    { params: { api_key: TMDB_KEY } }),
-                ]);
-                setMovies(nowPlaying.data.results);
-                setTrending(trendingRes.data.results);
-                setUpcoming(upcomingRes.data.results);
-                setTopRated(topRatedRes.data.results);
-                setGenres(genreRes.data.genres);
-            } catch {
-                setError('Failed to load movies. Check your connection and try refreshing.');
-            }
-        };
-        fetchAll();
+        const get = (path, params = {}) =>
+            axios.get(`${TMDB_BASE}${path}`, { params: { api_key: TMDB_KEY, language: 'en-US', ...params } });
+        Promise.all([
+            get('/movie/now_playing'), get('/trending/movie/day'),
+            get('/discover/movie', { sort_by: 'popularity.desc', 'primary_release_date.gte': new Date().toISOString().slice(0, 10), with_release_type: '2|3' }),
+            get('/movie/top_rated'), get('/genre/movie/list'),
+        ]).then(([now, trending, upcoming, top, g]) => {
+            setLists({ now: now.data.results, trending: trending.data.results, upcoming: upcoming.data.results, top: top.data.results });
+            setGenres(g.data.genres);
+        }).catch(() => setError('The film boards did not load. Check your connection, then refresh the page.'))
+          .finally(() => setLoaded(true));
     }, []);
 
-    const searchMovies = useCallback(async (query) => {
-        if (!query.trim()) { setSearchResults([]); setHasSearched(false); return; }
+    const search = useCallback(async (q) => {
+        if (!q.trim()) { setResults([]); setSearched(false); return; }
         try {
-            const response = await axios.get(`${TMDB_BASE}/search/movie`, {
-                params: { api_key: TMDB_KEY, query, include_adult: false },
-            });
-            setSearchResults(response.data.results);
-            setHasSearched(true);
+            const r = await axios.get(`${TMDB_BASE}/search/movie`, { params: { api_key: TMDB_KEY, query: q, include_adult: false } });
+            setResults(r.data.results);
+            setSearched(true);
         } catch {
-            setError('Search failed. Please try again.');
+            setError('The search did not go through. Try again in a moment.');
         }
     }, []);
 
     useEffect(() => {
-        const timer = setTimeout(() => searchMovies(searchQuery), 400);
-        return () => clearTimeout(timer);
-    }, [searchQuery, searchMovies]);
+        const t = setTimeout(() => search(query), 400);
+        return () => clearTimeout(t);
+    }, [query, search]);
 
-    const clearSearch = () => { setSearchQuery(''); setSearchResults([]); setHasSearched(false); };
-    const handleGenre = (id) => setSelectedGenre(prev => prev === id ? null : id);
-    const filterByGenre = (list) => selectedGenre ? list.filter(m => m.genre_ids?.includes(selectedGenre)) : list;
-
-    const filteredMovies   = filterByGenre(movies);
-    const filteredTrending = filterByGenre(trending);
-    const filteredUpcoming = filterByGenre(upcoming);
-    const filteredTopRated = filterByGenre(topRated);
-
-    const Section = ({ title, list }) => (
-        <>
-            <div className='section-heading'>
-                <h2>{title}</h2>
-                {selectedGenre && <span className='filter-count'>{list.length} films</span>}
-            </div>
-            {list.length > 0
-                ? <MovieList movies={list} />
-                : selectedGenre && <p className='empty-state'>No results in this genre.</p>
-            }
-        </>
-    );
+    const genreName = useMemo(() => Object.fromEntries(genres.map((g) => [g.id, g.name])), [genres]);
+    const inStrand = (list) => (strand ? list.filter((m) => m.genre_ids?.includes(strand)) : list);
+    const feature = lists.trending.find((m) => m.backdrop_path);
+    const now = inStrand(lists.now);
+    const upcoming = inStrand(lists.upcoming).slice().sort((a, b) => (a.release_date || '').localeCompare(b.release_date || ''));
+    const top = inStrand(lists.top).slice(0, 10);
+    const strandName = strand && genreName[strand];
 
     return (
         <div>
             <NavBar />
-            <main>
+            <main id="main">
+                <header className="mast wrap">
+                    <h1 className="mast__name">Adit's Cinema</h1>
+                    <div className="mast__rule">
+                        <p className="mast__lede">Film reviews written in Bahasa Indonesia, hung beside everything on screen this week. Honest, sometimes goofy, never professional.</p>
+                        <p className="mast__count">{loaded && lists.now.length > 0 && <><span className="num">{lists.now.length}</span> films showing</>}</p>
+                    </div>
+                </header>
+                <section className="facade" aria-labelledby="feature-title">
+                    <div className="wrap">
+                        <p className="facade__marquee" aria-hidden="true">Tonight's feature</p>
+                        {feature ? (
+                            <Link to={`/movies/${feature.id}`} className="facade__board">
+                                <span className="facade__frame">
+                                    <img src={`https://image.tmdb.org/t/p/w1280${feature.backdrop_path}`} alt={`A still from ${feature.title}`} />
+                                </span>
+                                <span className="facade__banner">
+                                    <span id="feature-title" className="facade__title">{feature.title}</span>
+                                    <span className="facade__go">See the film <FiArrowRight aria-hidden="true" /></span>
+                                </span>
+                            </Link>
+                        ) : <div className="facade__board facade__board--rest" />}
+                    </div>
+                </section>
+
                 {error && (
-                    <div className='error-banner'>
-                        ⚠ {error}
-                        <button className='error-dismiss' onClick={() => setError(null)}>✕</button>
+                    <div className="wrap">
+                        <p className="alert" role="alert">
+                            <FiAlertCircle aria-hidden="true" /> {error}
+                            <button className="icon-btn" onClick={() => setError(null)} aria-label="Dismiss"><FiX /></button>
+                        </p>
                     </div>
                 )}
 
-                <article id="welcome">
-                    <h2>Welcome</h2>
-                    <p>
-                        Hey there, welcome to my website! I've created this to share some of my movie reviews,
-                        and trust me, they can get pretty goofy at times. Head over to{' '}
-                        <strong>Reviews</strong> to find my thoughts on the films that left an impression on me.
-                    </p>
-                    <p>
-                        Browse now-playing, trending, upcoming, and all-time top rated films from TMDb below,
-                        or search for any movie. Enjoy your stay!
-                    </p>
-                </article>
+                <section className="block wrap" aria-labelledby="now">
+                    <Heading id="now" local="Now showing" english="In cinemas this week" />
+                    {genres.length > 0 && (
+                        <div className="strands" role="group" aria-label="Filter by genre">
+                            <button aria-pressed={strand === null} onClick={() => setStrand(null)}>All</button>
+                            {genres.map((g) => (
+                                <button key={g.id} aria-pressed={strand === g.id} onClick={() => setStrand(strand === g.id ? null : g.id)}>{g.name}</button>
+                            ))}
+                        </div>
+                    )}
+                    {!loaded ? <LoadingSpinner /> : now.length
+                        ? <ProgrammeList label="Now showing" items={now.map((m) => ({
+                            key: m.id, to: `/movies/${m.id}`, title: m.title,
+                            image: m.poster_path && `https://image.tmdb.org/t/p/w500${m.poster_path}`,
+                            meta: [(m.genre_ids || []).slice(0, 2).map((id) => genreName[id]).filter(Boolean).join(', '), m.release_date?.slice(0, 4), m.vote_average > 0 && m.vote_average.toFixed(1)],
+                        }))} />
+                        : <p className="empty">No {strandName} films are showing this week. <button className="text-btn" onClick={() => setStrand(null)}>Show them all</button></p>}
+                </section>
 
-                {genres.length > 0 && (
-                    <div className='genre-filter'>
-                        <button className={`genre-btn${selectedGenre === null ? ' active' : ''}`} onClick={() => setSelectedGenre(null)}>All</button>
-                        {genres.map(g => (
-                            <button key={g.id} className={`genre-btn${selectedGenre === g.id ? ' active' : ''}`} onClick={() => handleGenre(g.id)}>
-                                {g.name}
-                            </button>
-                        ))}
-                    </div>
-                )}
+                <section className="block wrap" aria-labelledby="soon">
+                    <Heading id="soon" local="Coming soon" english="Opening in the weeks ahead" />
+                    {!loaded ? <LoadingSpinner /> : upcoming.length
+                        ? <Billboards movies={upcoming} limit={8} note={(m) => `Opens ${opens(m.release_date)}`} />
+                        : <p className="empty">Nothing in {strandName} opens soon.</p>}
+                </section>
 
-                <Section title='Now Playing'   list={filteredMovies} />
-                <Section title='Trending Today' list={filteredTrending} />
-                <Section title='Coming Soon'    list={filteredUpcoming} />
-                <Section title='All-Time Best'  list={filteredTopRated} />
+                <section className="block wrap" aria-labelledby="buzz">
+                    <Heading id="buzz" local="Everyone's talking" english="Trending today" />
+                    {loaded && <Billboards movies={inStrand(lists.trending)} limit={8} />}
+                </section>
 
-                <div className='section-heading'><h2>Search Movies</h2></div>
-                <article id='welcome'>
-                    <div id='searchContainer'>
-                        <input
-                            id='searchBar'
-                            type="text"
-                            placeholder="Type to search any movie..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                <section className="block wrap" aria-labelledby="best">
+                    <Heading id="best" local="Best of all time" english="By audience vote" />
+                    {loaded && top.length > 0 && (
+                        <ProgrammeList
+                            ranked
+                            label="Best of all time"
+                            items={top.map((m) => ({
+                                key: m.id, to: `/movies/${m.id}`, title: m.title,
+                                image: m.poster_path && `https://image.tmdb.org/t/p/w500${m.poster_path}`,
+                                meta: [m.release_date?.slice(0, 4), `Rated ${m.vote_average.toFixed(1)}`],
+                            }))}
                         />
-                        {searchQuery && (
-                            <button className='search-clear' onClick={clearSearch} title="Clear">✕</button>
-                        )}
+                    )}
+                </section>
+
+                <section className="block wrap" aria-labelledby="find">
+                    <Heading id="find" local="Find a film" english="Search every title" />
+                    <div className="archive">
+                        <FiSearch aria-hidden="true" />
+                        <input type="search" aria-label="Film title" placeholder="Film title, e.g. Satan's Slaves" value={query} onChange={(e) => setQuery(e.target.value)} />
+                        {query && <button className="icon-btn" onClick={() => setQuery('')} aria-label="Clear the search"><FiX /></button>}
                     </div>
-                    {hasSearched && searchResults.length === 0 && (
-                        <div className='empty-state'>No movies found for <strong>"{searchQuery}"</strong>.</div>
-                    )}
-                    {searchResults.length > 0 && (
-                        <>
-                            <p className='search-count'>{searchResults.length} results for "{searchQuery}"</p>
-                            <MovieList movies={searchResults} />
-                        </>
-                    )}
-                </article>
+                    {searched && results.length === 0 && <p className="empty">Nothing called "{query}". Try the original title.</p>}
+                    {results.length > 0 && <Billboards movies={results} limit={16} />}
+                </section>
             </main>
             <Footer />
         </div>

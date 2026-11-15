@@ -1,77 +1,48 @@
 import '../App.css';
 import { FaInstagram, FaLinkedin, FaYoutube, FaSpotify, FaGithub } from 'react-icons/fa';
-import { SiLetterboxd } from "react-icons/si";
+import { SiLetterboxd } from 'react-icons/si';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
 
-const About = () => {
-    return (
-        <div>
-            <NavBar />
-            <main>
-                <div className="about-layout">
-                    <div className="about-content">
-                        <article className="card" id='about'>
-                            <h2>About This Website</h2>
-                            <p>
-                                Welcome to my movie review website! This platform is built with React and follows
-                                Progressive Web App (PWA) standards. It uses the TMDb API to show real-time
-                                info on currently playing movies, trending films, and lets you search an
-                                extensive movie database.
-                            </p>
-                            <p>
-                                Compared to an earlier version built with plain HTML and CSS, this version
-                                introduces dynamic features and a more seamless experience thanks to React.
-                            </p>
-                            <p>
-                                This site is a casual passion project — a love letter to cinema, built one
-                                component at a time. If you're curious about the person behind the pixels,
-                                check out the social links!
-                            </p>
-                        </article>
-                    </div>
+const LINKS = [
+    { href: 'https://letterboxd.com/aditjh/', label: 'Letterboxd', Icon: SiLetterboxd },
+    { href: 'https://instagram.com/adit.akbarr', label: 'Instagram', Icon: FaInstagram },
+    { href: 'https://linkedin.com/in/aditakbars', label: 'LinkedIn', Icon: FaLinkedin },
+    { href: 'https://www.youtube.com/channel/UCJCjiREopSD0-Av186mz_yA', label: 'YouTube', Icon: FaYoutube },
+    { href: 'https://sptfy.com/inimah', label: 'Spotify', Icon: FaSpotify },
+    { href: 'https://github.com/aditakbars', label: 'GitHub', Icon: FaGithub },
+];
 
-                    <div className="about-sidebar">
-                        <div className="profile-card">
-                            <h2>🎬</h2>
-                            <img
-                                className="profile-img"
-                                src="/images/adit-akbars.webp"
-                                alt="Adit Akbars"
-                            />
-                            <p style={{ margin: 0, fontFamily: 'Inter', fontSize: '0.95em', color: '#b0c0d0', textAlign: 'center', textIndent: 0 }}>
-                                Adit Akbars
-                            </p>
-                        </div>
-
-                        <article className="card" id="socmed">
-                            <div id="socmed-icon">
-                                <a href="https://instagram.com/adit.akbarr" target="_blank" rel='noreferrer' title="Instagram">
-                                    <FaInstagram size={28} />
-                                </a>
-                                <a href="https://linkedin.com/in/aditakbars" target="_blank" rel='noreferrer' title="LinkedIn">
-                                    <FaLinkedin size={28} />
-                                </a>
-                                <a href="https://www.youtube.com/channel/UCJCjiREopSD0-Av186mz_yA" target="_blank" rel='noreferrer' title="YouTube">
-                                    <FaYoutube size={28} />
-                                </a>
-                                <a href="https://sptfy.com/inimah" target="_blank" rel='noreferrer' title="Spotify">
-                                    <FaSpotify size={28} />
-                                </a>
-                                <a href="https://letterboxd.com/aditjh/" target="_blank" rel='noreferrer' title="Letterboxd">
-                                    <SiLetterboxd size={28} />
-                                </a>
-                                <a href="https://github.com/aditakbars" target="_blank" rel='noreferrer' title="GitHub">
-                                    <FaGithub size={28} />
-                                </a>
-                            </div>
-                        </article>
-                    </div>
+const About = () => (
+    <div>
+        <NavBar />
+        <main id="main" className="wrap">
+            <article className="profile">
+                <div className="profile__photo">
+                    <img src="/images/adit-akbars.webp" alt="Adit Akbars" />
                 </div>
-            </main>
-            <Footer />
-        </div>
-    );
-};
+                <div className="profile__text">
+                    <h1>About this cinema</h1>
+                    <div className="prose">
+                        <p>
+                            Adit's Cinema is a one-person passion project: my reviews, set beside live listings from the
+                            TMDb API for what's showing, what opens soon and what audiences rate highest. It's built in
+                            React and replaces an older version I wrote in plain HTML and CSS.
+                        </p>
+                        <p>The person behind the programme is easiest to find here:</p>
+                    </div>
+                    <ul className="elsewhere">
+                        {LINKS.map(({ href, label, Icon }) => (
+                            <li key={label}>
+                                <a href={href} target="_blank" rel="noreferrer"><Icon aria-hidden="true" /> {label}</a>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </article>
+        </main>
+        <Footer />
+    </div>
+);
 
 export default About;

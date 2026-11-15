@@ -1,5 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import '@fontsource/bowlby-one/400';
+import '@fontsource/archivo/400';
+import '@fontsource/archivo/400-italic';
+import '@fontsource/archivo/600';
+import '@fontsource/archivo/800';
+import './Styles.css';
 
 import Home from './pages/Home';
 import MovieDetail from './pages/MovieDetail';
@@ -7,20 +14,8 @@ import Reviews from './pages/Reviews';
 import ReviewDetail from './pages/ReviewDetail';
 import About from './pages/About';
 import ActorDetail from './pages/ActorDetail';
-import './Styles.css';
-
-import SplashScreen from './components/SplashScreen';
 
 function App() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) return <SplashScreen />;
-
   return (
     <div className="App">
       <Router>

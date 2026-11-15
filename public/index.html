@@ -4,7 +4,16 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/The_Criterion_Collection_Logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#15110e" />
+    <script>
+      /* Set the theme before first paint so the page never flashes the wrong lights */
+      try {
+        if (localStorage.getItem('adits-cinema-theme') === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#c8281d');
+        }
+      } catch (e) {}
+    </script>
     <meta name="description" content="Web site created using create-react-app" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/The_Criterion_Collection_Logo.svg" />
     <!--

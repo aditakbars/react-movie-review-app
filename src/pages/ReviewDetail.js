@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FiAlertCircle, FiArrowLeft } from 'react-icons/fi';
 import '../App.css';
 
 import ReviewCard from '../components/ReviewCard';
+import LoadingSpinner from '../components/LoadingSpinner';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -15,40 +17,20 @@ const ReviewDetail = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchReview = async () => {
-            try {
-                const response = await axios.get(
-                    `https://my-movie-review.onrender.com/reviews/${id}`
-                );
-                setReview(response.data.data);
-            } catch (err) {
-                setError('Could not load this review. Please try again later.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchReview();
+        window.scrollTo(0, 0);
+        axios.get(`https://my-movie-review.onrender.com/reviews/${id}`)
+            .then((r) => setReview(r.data.data))
+            .catch(() => setError('This review did not load. The server sleeps when idle, so give it 30 seconds and refresh.'))
+            .finally(() => setIsLoading(false));
     }, [id]);
 
     return (
         <div>
             <NavBar />
-            <main>
-                <button className='back-btn' onClick={() => navigate(-1)}>← Back</button>
-
-                {error && <div className='error-banner'>⚠ {error}</div>}
-
-                {isLoading ? (
-                    <div className='card' style={{ textAlign: 'center', padding: '40px', color: '#6a8099' }}>
-                        <div className='loading-spinner' style={{ margin: '0 auto 16px' }} />
-                        Loading review...
-                    </div>
-                ) : (
-                    <article className='card' id='welcome'>
-                        <ReviewCard review={review} />
-                    </article>
-                )}
+            <main id="main" className="wrap">
+                <button className="back" onClick={() => navigate(-1)}><FiArrowLeft aria-hidden="true" /> Back</button>
+                {error && <p className="alert" role="alert"><FiAlertCircle aria-hidden="true" /> {error}</p>}
+                {isLoading ? <LoadingSpinner rows={5} /> : <ReviewCard review={review} />}
             </main>
             <Footer />
         </div>
