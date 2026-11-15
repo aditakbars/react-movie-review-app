@@ -14,6 +14,7 @@ import { useTitle } from '../hooks';
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 const BIO_LIMIT = 700;
+const longDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
 const ActorDetail = () => {
     const { id } = useParams();
@@ -66,7 +67,7 @@ const ActorDetail = () => {
                         <div className="profile__text">
                             <h1>{person.name}</h1>
                             <p className="note__line">
-                                {[person.known_for_department, person.birthday && `Born ${person.birthday}`, person.place_of_birth, person.deathday && `Died ${person.deathday}`]
+                                {[person.known_for_department, person.birthday && `Born ${longDate(person.birthday)}`, person.place_of_birth, person.deathday && `Died ${longDate(person.deathday)}`]
                                     .filter(Boolean).map((t, i) => <span key={i}>{t}</span>)}
                             </p>
                             {bio && (

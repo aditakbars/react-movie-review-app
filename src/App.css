@@ -100,7 +100,7 @@ p { text-wrap: pretty; }
 ul, ol { list-style: none; margin: 0; padding: 0; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; }
-img { display: block; max-width: 100%; }
+img { display: block; max-width: 100%; height: auto; } /* width/height attributes reserve space; CSS keeps the real proportions */
 .num { font-variant-numeric: tabular-nums; }
 .wrap { width: 100%; max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
 .skip-link { position: absolute; left: 16px; top: -60px; z-index: 200; background: var(--ink); color: var(--wall); padding: 10px 16px; }
@@ -523,4 +523,22 @@ img { display: block; max-width: 100%; }
 @media (max-width: 639px) {
   .note__head h1, .review__head h1, .profile__text h1, .page-head h1 { max-width: 100%; overflow-wrap: break-word; }
   .note__head h1 { font-size: clamp(28px, 8.4vw, 40px); }
+}
+
+/* Below desktop the projection panel is hidden: give the listing the full width */
+@media (max-width: 1023px) {
+  .prog { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Region switch in the film sidebar: label above, both buttons on one line */
+.showing .region__label { flex-basis: 100%; }
+.showing .region { flex-wrap: wrap; }
+
+/* Critics' plates share one row on phones */
+@media (max-width: 639px) {
+  .critics__plates { flex-wrap: nowrap; gap: 8px; }
+  .critics__plate { flex: 1 1 0; min-width: 0; padding: 8px 8px 6px; box-shadow: 3px 3px 0 var(--lift); }
+  .critics__value { font-size: 26px; }
+  .critics__name { font-size: 11px; letter-spacing: .03em; }
+  .critics__unit { display: none; }
 }
