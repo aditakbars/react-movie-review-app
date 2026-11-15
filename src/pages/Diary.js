@@ -7,6 +7,7 @@ import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Stars from '../components/Stars';
+import Billboards from '../components/Billboards';
 import { useDiary, useTitle } from '../hooks';
 
 const monthName = (d) => new Date(d).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
@@ -14,7 +15,7 @@ const monthName = (d) => new Date(d).toLocaleDateString('en-GB', { month: 'long'
 /* The Letterboxd diary as a printed programme: a month per section, a film per night. */
 const Diary = () => {
     useTitle('Diary');
-    const { entries, profileUrl, updated, loaded } = useDiary();
+    const { entries, ratings, watchedCount, profileUrl, updated, loaded } = useDiary();
 
     const months = useMemo(() => {
         const groups = [];
@@ -26,11 +27,15 @@ const Diary = () => {
         return groups;
     }, [entries]);
 
-    const rated = entries.filter((e) => e.rating);
+    // Stats come from every rating (the export's ratings), falling back to diary entries.
+    const rated = ratings.length ? ratings : entries.filter((e) => e.rating);
     const average = rated.length ? (rated.reduce((s, e) => s + e.rating, 0) / rated.length).toFixed(1) : null;
-    const best = rated.length ? Math.max(...rated.map((e) => e.rating)) : null;
-    const favourites = rated.filter((e) => e.rating === best);
+    const fiveStars = rated.filter((r) => r.rating === 5 && r.tmdbId && r.poster);
+    const spread = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((v) => ({ v, n: rated.filter((r) => r.rating === v).length }));
+    const tallest = Math.max(1, ...spread.map((s) => s.n));
     const since = entries.length ? monthName(entries[entries.length - 1].watched) : null;
+    const years = [...new Set(entries.map((e) => e.watched.slice(0, 4)))]
+        .map((y) => ({ y, n: entries.filter((e) => e.watched.startsWith(y)).length }));
 
     return (
         <div>
@@ -49,15 +54,44 @@ const Diary = () => {
 
                 {entries.length > 0 && (
                     <dl className="tally">
-                        <div><dt>Films logged</dt><dd className="num">{entries.length}</dd></div>
-                        {average && <div><dt>Average rating</dt><dd><span className="num">{average}</span> <span className="tally__unit">/ 5</span></dd></div>}
-                        {favourites.length > 0 && <div><dt>Top rated</dt><dd className="tally__films">{favourites.map((f) => f.title).join(', ')}</dd></div>}
-                        {since && <div><dt>Since</dt><dd className="tally__films">{since}</dd></div>}
+                        <div><dt>Diary entries</dt><dd className="num">{entries.length}</dd></div>
+                        {watchedCount > 0 && <div><dt>Films seen, all time</dt><dd className="num">{watchedCount}</dd></div>}
+                        {average && <div><dt>Average rating</dt><dd><span className="num">{average}</span> <span className="tally__unit">/ 5 across {rated.length}</span></dd></div>}
+                        {since && <div><dt>Diary since</dt><dd className="tally__films">{since}</dd></div>}
                     </dl>
                 )}
 
+                {rated.length > 9 && (
+                    <section className="spread-wrap" aria-labelledby="spread-head">
+                        <h2 id="spread-head" className="found__head">How I rate</h2>
+                        <ul className="spread">
+                            {spread.map(({ v, n }) => (
+                                <li key={v} aria-label={`${n} films rated ${v} out of 5`}>
+                                    <span className="spread__n num" aria-hidden="true">{n || ''}</span>
+                                    <span className="spread__bar" style={{ height: `${Math.max(2, (n / tallest) * 100)}%` }} aria-hidden="true" />
+                                    <span className="spread__v" aria-hidden="true">{`${Math.floor(v) || ''}${v % 1 ? '½' : ''}`}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="spread__legend" aria-hidden="true">Stars given, from half a star to five</p>
+                    </section>
+                )}
+
+                {fiveStars.length > 0 && (
+                    <section className="block" aria-labelledby="five-head">
+                        <div className="block__head"><h2 id="five-head">Five stars</h2><p className="block__en">Every film I've given full marks</p></div>
+                        <Billboards movies={fiveStars.map((r) => ({ id: r.tmdbId, title: r.title, poster_path: r.poster, release_date: r.year }))} limit={12} />
+                    </section>
+                )}
+
+                {years.length > 1 && (
+                    <nav className="years" aria-label="Jump to a year">
+                        {years.map(({ y, n }) => <a key={y} href={`#y-${y}`}>{y} <span className="num">{n}</span></a>)}
+                    </nav>
+                )}
+
                 {months.map((m) => (
-                    <section key={m.key} className="month" aria-labelledby={`m-${m.key}`}>
+                    <section key={m.key} id={months.find((x) => x.key.slice(0, 4) === m.key.slice(0, 4)) === m ? `y-${m.key.slice(0, 4)}` : undefined} className="month" aria-labelledby={`m-${m.key}`}>
                         <h2 id={`m-${m.key}`} className="month__head">{m.label}</h2>
                         <ol className="month__list">
                             {m.items.map((e) => (

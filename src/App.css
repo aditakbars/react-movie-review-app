@@ -594,3 +594,18 @@ img { display: block; max-width: 100%; height: auto; } /* width/height attribute
   .entry__lb { display: none; }
   .tally dd { font-size: 28px; }
 }
+
+/* ── Diary: rating spread, year jumps ── */
+.entry__review, .board__quote { white-space: pre-line; }
+.spread-wrap { margin: 0 0 24px; max-width: 520px; }
+.spread { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; align-items: end; height: 140px; }
+.spread li { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
+.spread__bar { width: 100%; background: var(--hi); border: 2px solid var(--edge); box-shadow: 2px 2px 0 var(--hi-shadow); }
+.spread__n { font-size: 12px; font-weight: 700; color: var(--muted); }
+.spread__v { font-size: 12px; font-weight: 800; color: var(--muted); }
+.spread__legend { margin-top: 8px; color: var(--muted); font-size: 13px; font-weight: 600; }
+.years { display: flex; flex-wrap: wrap; gap: 8px; margin: 56px 0 28px; }
+.years a { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 4px 14px; background: var(--wall-2); border: 2px solid var(--line); border-radius: 3px; font-weight: 800; }
+.years a .num { color: var(--ink-2); font-weight: 600; }
+.years a:hover { border-color: var(--hi); }
+.month { scroll-margin-top: 84px; }

@@ -11,20 +11,10 @@
   - If Letterboxd can't be reached, the existing file is left untouched and the
     script exits successfully, so a deploy never fails because of it.
 */
-const fs = require('fs');
-const path = require('path');
+const { readEnvKey, readDiary, writeDiary, entryKey, sortEntries, tmdb } = require('./letterboxd-lib');
 
 const USER = process.env.LETTERBOXD_USER || 'aditjh';
-const OUT = path.join(__dirname, '..', 'public', 'letterboxd.json');
 const FEED = `https://letterboxd.com/${USER}/rss/`;
-
-const readEnvKey = () => {
-    if (process.env.REACT_APP_TMDB_KEY) return process.env.REACT_APP_TMDB_KEY;
-    try {
-        const env = fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8');
-        return (env.match(/^REACT_APP_TMDB_KEY=(.+)$/m) || [])[1]?.trim();
-    } catch (e) { return undefined; }
-};
 
 const decode = (s) => s
     .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n))
@@ -64,8 +54,7 @@ const parse = (xml) => (xml.match(/<item>[\s\S]*?<\/item>/g) || []).map((item) =
 }).filter(Boolean);
 
 const main = async () => {
-    let existing = { entries: [] };
-    try { existing = JSON.parse(fs.readFileSync(OUT, 'utf8')); } catch (e) { /* first run */ }
+    const existing = readDiary();
 
     let xml;
     try {
@@ -78,26 +67,36 @@ const main = async () => {
     }
 
     const fresh = parse(xml).filter((e) => e.id);
-    const byId = new Map(existing.entries.map((e) => [e.id, e]));
-    // Fresh copies win, so edited ratings or reviews are picked up; TMDb posters carry over.
-    fresh.forEach((e) => byId.set(e.id, { ...byId.get(e.id), ...e, poster: byId.get(e.id)?.poster }));
+    const byId = new Map((existing.entries || []).map((e) => [e.id, e]));
+    const byKey = new Map((existing.entries || []).map((e) => [entryKey(e), e]));
+    // Fresh copies win, so edited ratings or reviews are picked up. An entry that
+    // came from the monthly export is recognised by film + year + date, not id.
+    fresh.forEach((e) => {
+        const prev = byId.get(e.id) || byKey.get(entryKey(e));
+        if (prev && prev.id !== e.id) byId.delete(prev.id);
+        byId.set(e.id, { ...prev, ...e, poster: prev?.poster });
+    });
 
     const key = readEnvKey();
     if (key) {
-        const missing = [...byId.values()].filter((e) => e.tmdbId && e.poster === undefined);
-        for (const e of missing) {
-            try {
-                const r = await fetch(`https://api.themoviedb.org/3/movie/${e.tmdbId}?api_key=${key}`);
-                e.poster = r.ok ? (await r.json()).poster_path || null : undefined;
-            } catch (err) { /* try again next run */ }
+        const api = tmdb(key);
+        for (const e of [...byId.values()].filter((x) => x.tmdbId && x.poster === undefined)) {
+            try { e.poster = await api.poster(e.tmdbId); } catch (err) { /* try again next run */ }
         }
     }
 
-    const entries = [...byId.values()].sort((a, b) => (b.watched || '').localeCompare(a.watched || '') || b.id.localeCompare(a.id));
-    const out = { profile: USER, profileUrl: `https://letterboxd.com/${USER}/`, updated: new Date().toISOString(), entries };
-    const before = JSON.stringify(existing.entries);
-    if (before === JSON.stringify(entries)) { console.log(`No new diary entries (${entries.length} saved).`); return; }
-    fs.writeFileSync(OUT, `${JSON.stringify(out, null, 1)}\n`);
+    const entries = sortEntries([...byId.values()]);
+    if (JSON.stringify(existing.entries || []) === JSON.stringify(entries)) {
+        console.log(`No new diary entries (${entries.length} saved).`);
+        return;
+    }
+    writeDiary({
+        ...existing,
+        profile: USER,
+        profileUrl: `https://letterboxd.com/${USER}/`,
+        updated: new Date().toISOString(),
+        entries,
+    });
     console.log(`Diary saved: ${entries.length} entries (${fresh.length} in the feed).`);
 };
 
