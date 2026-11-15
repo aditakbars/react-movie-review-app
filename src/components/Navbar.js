@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import '../App.css';
 import LightsSwitch from './LightsSwitch';
+import OfflineNotice from './OfflineNotice';
 
 const NavBar = () => (
     <header className="bar">
@@ -18,6 +19,7 @@ const NavBar = () => (
             </nav>
             <LightsSwitch />
         </div>
+        <OfflineNotice />
     </header>
 );
 

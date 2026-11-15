@@ -421,3 +421,7 @@ img { display: block; max-width: 100%; }
 @media (max-width: 639px) {
   .warmup { grid-template-columns: 1fr; padding: 20px; }
 }
+
+/* ── Offline strip ── */
+.offline { background: var(--yellow); color: var(--edge); font-weight: 700; font-size: 14px; padding: 8px 0; border-top: 2px solid var(--edge); }
+.offline .wrap { display: block; }

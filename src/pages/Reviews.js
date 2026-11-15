@@ -26,7 +26,7 @@ const Reviews = () => {
                     </p>
                 </header>
                 {error && !has && (
-                    <p className="alert" role="alert"><FiAlertCircle aria-hidden="true" /> The reviews did not load. The server may still be waking; refresh in a moment.</p>
+                    <p className="alert" role="alert"><FiAlertCircle aria-hidden="true" /> {navigator.onLine === false ? "You're offline, and this device hasn't saved the reviews yet." : 'The reviews did not load. The server may still be waking; refresh in a moment.'}</p>
                 )}
                 {has && <ReviewList reviews={reviews} films={films} />}
                 {!has && loading && (slow ? <WarmingUp /> : <LoadingSpinner />)}

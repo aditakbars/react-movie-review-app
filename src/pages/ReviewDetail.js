@@ -37,7 +37,7 @@ const ReviewDetail = () => {
             <NavBar />
             <main id="main" className="wrap">
                 <button className="back" onClick={() => navigate(-1)}><FiArrowLeft aria-hidden="true" /> Back</button>
-                {error && !review && <p className="alert" role="alert"><FiAlertCircle aria-hidden="true" /> This review did not load. The server may still be waking; refresh in a moment.</p>}
+                {error && !review && <p className="alert" role="alert"><FiAlertCircle aria-hidden="true" /> {navigator.onLine === false ? "You're offline, and this device hasn't saved this review yet." : 'This review did not load. The server may still be waking; refresh in a moment.'}</p>}
                 {review ? <ReviewCard review={review} /> : loading && (slow ? <WarmingUp /> : <LoadingSpinner rows={5} />)}
             </main>
             <Footer />
