@@ -19,7 +19,7 @@ const About = () => (
         <main id="main" className="wrap">
             <article className="profile">
                 <div className="profile__photo">
-                    <img src="/images/adit-akbars.webp" alt="Adit Akbars" />
+                    <img src="/images/adit-akbars.webp" srcSet="/images/adit-akbars-600.webp 600w, /images/adit-akbars.webp 900w" sizes="(max-width: 1023px) 300px, 360px" width="900" height="1200" fetchpriority="high" alt="Adit Akbars" />
                 </div>
                 <div className="profile__text">
                     <h1>About this cinema</h1>

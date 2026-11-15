@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="%PUBLIC_URL%/icon-192.png" />
+    <link rel="preconnect" href="https://api.themoviedb.org" crossorigin />
+    <link rel="preconnect" href="https://image.tmdb.org" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#15110e" />
     <script>
@@ -11,7 +13,7 @@
       try {
         if (localStorage.getItem('adits-cinema-theme') === 'light') {
           document.documentElement.setAttribute('data-theme', 'light');
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#c8281d');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#b3231a');
         }
       } catch (e) {}
     </script>

@@ -86,14 +86,19 @@ const Home = () => {
                         {feature ? (
                             <Link to={`/movies/${feature.id}`} className="facade__board">
                                 <span className="facade__frame">
-                                    <img src={`https://image.tmdb.org/t/p/w1280${feature.backdrop_path}`} alt={`A still from ${feature.title}`} />
+                                    <img src={`https://image.tmdb.org/t/p/w1280${feature.backdrop_path}`} srcSet={`https://image.tmdb.org/t/p/w780${feature.backdrop_path} 780w, https://image.tmdb.org/t/p/w1280${feature.backdrop_path} 1280w`} sizes="(max-width: 1416px) 100vw, 1320px" fetchpriority="high" width="1280" height="720" alt={`A still from ${feature.title}`} />
                                 </span>
                                 <span className="facade__banner">
                                     <span id="feature-title" className="facade__title">{feature.title}</span>
                                     <span className="facade__go">See the film <FiArrowRight aria-hidden="true" /></span>
                                 </span>
                             </Link>
-                        ) : <div className="facade__board facade__board--rest" />}
+                        ) : (
+                            <div className="facade__board facade__board--rest" aria-hidden="true">
+                                <span className="facade__frame" />
+                                <span className="facade__banner"><span className="facade__title">&nbsp;</span><span className="facade__go">&nbsp;</span></span>
+                            </div>
+                        )}
                     </div>
                 </section>
 

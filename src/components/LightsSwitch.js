@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 const KEY = 'adits-cinema-theme';
-const BAR_COLOUR = { dark: '#15110e', light: '#c8281d' };
+const BAR_COLOUR = { dark: '#15110e', light: '#b3231a' };
 
 const currentTheme = () =>
     document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';

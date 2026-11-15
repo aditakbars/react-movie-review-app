@@ -66,7 +66,7 @@ const MovieDetail = () => {
                     <article className="note">
                         {movie.backdrop_path && (
                             <figure className="note__still">
-                                <img src={`https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`} alt={`A still from ${movie.title}`} />
+                                <img src={`https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`} srcSet={`https://image.tmdb.org/t/p/w780${movie.backdrop_path} 780w, https://image.tmdb.org/t/p/w1280${movie.backdrop_path} 1280w`} sizes="(max-width: 1416px) 100vw, 1320px" fetchpriority="high" width="1280" height="720" alt={`A still from ${movie.title}`} />
                             </figure>
                         )}
                         <header className="note__head">
@@ -87,7 +87,7 @@ const MovieDetail = () => {
 
                         <div className="note__grid">
                             <aside className="note__side">
-                                {movie.poster_path && <img className="note__poster" src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={`${movie.title} poster`} />}
+                                {movie.poster_path && <img className="note__poster" src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} srcSet={`https://image.tmdb.org/t/p/w342${movie.poster_path} 342w, https://image.tmdb.org/t/p/w500${movie.poster_path} 500w`} sizes="(max-width: 639px) 220px, 320px" width="500" height="750" loading="lazy" alt={`${movie.title} poster`} />}
                                 <MovieCard movie={movie} crew={crew} />
                                 <WatchProviders providers={movie['watch/providers']?.results} />
                             </aside>

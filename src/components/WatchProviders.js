@@ -8,7 +8,7 @@ const WatchProviders = ({ providers }) => {
 
     return (
         <div className="showing">
-            <h3>Showing at home, US</h3>
+            <h2>Showing at home, US</h2>
             <dl>
                 {groups.map(([label, list]) => (
                     <div key={label}>
