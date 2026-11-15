@@ -16,13 +16,19 @@ export const loadDiary = () => {
 export const starText = (rating) => (rating ? '★'.repeat(Math.floor(rating)) + (rating % 1 ? '½' : '') : '');
 export const starLabel = (rating) => (rating ? `${rating} out of 5 stars` : 'Not rated');
 
-/* Latest diary entry per TMDb film id, plus how many times the film was logged. */
-export const indexByFilm = (entries) => {
+/*
+  TMDb film id -> what Adit thinks of it: the latest diary entry (with how many
+  times it was logged), or just the rating for films rated but never logged.
+  `rating` is always the film's current rating, which is what badges show.
+*/
+export const indexByFilm = (entries, ratings = []) => {
     const map = new Map();
+    ratings.forEach((r) => { if (r.tmdbId) map.set(r.tmdbId, { ...r, ratedOnly: true, logs: 0 }); });
+    const current = new Map(ratings.filter((r) => r.tmdbId).map((r) => [r.tmdbId, r.rating]));
     entries.forEach((e) => {
         if (!e.tmdbId) return;
         const seen = map.get(e.tmdbId);
-        if (!seen) map.set(e.tmdbId, { ...e, logs: 1 });
+        if (!seen || seen.ratedOnly) map.set(e.tmdbId, { ...e, logs: 1, entryRating: e.rating, rating: current.get(e.tmdbId) ?? e.rating });
         else seen.logs += 1;
     });
     return map;

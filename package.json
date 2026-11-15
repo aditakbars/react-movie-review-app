@@ -26,7 +26,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "letterboxd": "node scripts/fetch-letterboxd.js"
+    "letterboxd": "node scripts/fetch-letterboxd.js",
+    "letterboxd:import": "node scripts/import-letterboxd.js"
   },
   "eslintConfig": {
     "extends": [
@@ -50,5 +51,8 @@
     "moduleNameMapper": {
       "^axios$": "axios/dist/node/axios.cjs"
     }
+  },
+  "devDependencies": {
+    "adm-zip": "^0.5.16"
   }
 }

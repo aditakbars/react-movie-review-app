@@ -56,11 +56,11 @@ export const useReviewed = () => {
 
 /* Adit's Letterboxd diary: entries newest first, and a TMDb id -> latest entry map. */
 export const useDiary = () => {
-    const [diary, setDiary] = useState({ entries: [], byFilm: new Map(), profileUrl: null, loaded: false });
+    const [diary, setDiary] = useState({ entries: [], ratings: [], watchedCount: 0, byFilm: new Map(), profileUrl: null, loaded: false });
     useEffect(() => {
         let alive = true;
         loadDiary().then((d) => alive && setDiary({
-            entries: d.entries || [], byFilm: indexByFilm(d.entries || []), profileUrl: d.profileUrl, updated: d.updated, loaded: true,
+            entries: d.entries || [], byFilm: indexByFilm(d.entries || [], d.ratings || []), ratings: d.ratings || [], watchedCount: d.watchedCount, profileUrl: d.profileUrl, updated: d.updated, loaded: true,
         }));
         return () => { alive = false; };
     }, []);
