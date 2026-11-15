@@ -61,32 +61,10 @@ const Diary = () => {
                     </dl>
                 )}
 
-                {rated.length > 9 && (
-                    <section className="spread-wrap" aria-labelledby="spread-head">
-                        <h2 id="spread-head" className="found__head">How I rate</h2>
-                        <ul className="spread">
-                            {spread.map(({ v, n }) => (
-                                <li key={v} aria-label={`${n} films rated ${v} out of 5`}>
-                                    <span className="spread__n num" aria-hidden="true">{n || ''}</span>
-                                    <span className="spread__bar" style={{ height: `${Math.max(2, (n / tallest) * 100)}%` }} aria-hidden="true" />
-                                    <span className="spread__v" aria-hidden="true">{`${Math.floor(v) || ''}${v % 1 ? '½' : ''}`}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <p className="spread__legend" aria-hidden="true">Stars given, from half a star to five</p>
-                    </section>
-                )}
-
-                {fiveStars.length > 0 && (
-                    <section className="block" aria-labelledby="five-head">
-                        <div className="block__head"><h2 id="five-head">Five stars</h2><p className="block__en">Every film I've given full marks</p></div>
-                        <Billboards movies={fiveStars.map((r) => ({ id: r.tmdbId, title: r.title, poster_path: r.poster, release_date: r.year }))} limit={12} />
-                    </section>
-                )}
-
                 {years.length > 1 && (
                     <nav className="years" aria-label="Jump to a year">
                         {years.map(({ y, n }) => <a key={y} href={`#y-${y}`}>{y} <span className="num">{n}</span></a>)}
+                        {(rated.length > 9 || fiveStars.length > 0) && <a href="#numbers" className="years__numbers">Ratings &amp; favourites ↓</a>}
                     </nav>
                 )}
 
@@ -122,6 +100,32 @@ const Diary = () => {
                     </section>
                 ))}
 
+                {(rated.length > 9 || fiveStars.length > 0) && (
+                    <section id="numbers" className="numbers" aria-labelledby="numbers-head">
+                        <div className="block__head"><h2 id="numbers-head">By the numbers</h2><p className="block__en">How I rate, and the films I've given full marks</p></div>
+                    {rated.length > 9 && (
+                        <section className="spread-wrap" aria-labelledby="spread-head">
+                            <h3 id="spread-head" className="found__head">How I rate</h3>
+                            <ul className="spread">
+                                {spread.map(({ v, n }) => (
+                                    <li key={v} aria-label={`${n} films rated ${v} out of 5`}>
+                                        <span className="spread__n num" aria-hidden="true">{n || ''}</span>
+                                        <span className="spread__bar" style={{ height: `${Math.max(2, (n / tallest) * 100)}%` }} aria-hidden="true" />
+                                        <span className="spread__v" aria-hidden="true">{`${Math.floor(v) || ''}${v % 1 ? '½' : ''}`}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className="spread__legend" aria-hidden="true">Stars given, from half a star to five</p>
+                        </section>
+                    )}
+                    {fiveStars.length > 0 && (
+                        <section className="numbers__five" aria-labelledby="five-head">
+                            <h3 id="five-head" className="found__head">Five stars <span className="numbers__count num">{fiveStars.length}</span></h3>
+                            <Billboards movies={fiveStars.map((r) => ({ id: r.tmdbId, title: r.title, poster_path: r.poster, release_date: r.year }))} limit={12} />
+                        </section>
+                    )}
+                    </section>
+                )}
                 {updated && <p className="diary__updated">Last synced {new Date(updated).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.</p>}
             </main>
             <Footer />

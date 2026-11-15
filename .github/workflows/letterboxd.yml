@@ -11,6 +11,11 @@ on:
   schedule:
     - cron: '17 22 * * *'   # 05:17 in Jakarta, every day
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Rebuild and deploy even if there are no new diary entries
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -55,7 +60,7 @@ jobs:
           git push
 
       - name: Build the site
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.diff.outputs.changed == 'true' || inputs.deploy
         run: |
           npm ci
           npm run build
@@ -65,7 +70,7 @@ jobs:
           REACT_APP_OMDB_KEY: ${{ secrets.OMDB_KEY }}
 
       - name: Deploy to Firebase Hosting
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.diff.outputs.changed == 'true' || inputs.deploy
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

@@ -609,3 +609,8 @@ img { display: block; max-width: 100%; height: auto; } /* width/height attribute
 .years a .num { color: var(--ink-2); font-weight: 600; }
 .years a:hover { border-color: var(--hi); }
 .month { scroll-margin-top: 84px; }
+.numbers { margin-top: 104px; scroll-margin-top: 84px; }
+.numbers .spread-wrap { margin-top: 8px; }
+.numbers__five { margin-top: 56px; }
+.numbers__count { font-family: var(--body); font-size: 15px; color: var(--muted); margin-left: 6px; }
+.years__numbers { border-style: dashed !important; }
