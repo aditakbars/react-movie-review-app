@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import '../App.css';
+import LightsSwitch from './LightsSwitch';
 
 const NavBar = () => (
     <header className="bar">
@@ -15,6 +16,7 @@ const NavBar = () => (
                     <li><NavLink to="/about">About</NavLink></li>
                 </ul>
             </nav>
+            <LightsSwitch />
         </div>
     </header>
 );
