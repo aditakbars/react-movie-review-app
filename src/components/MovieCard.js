@@ -1,65 +1,38 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../App.css';
 
-const MovieCard = ({ movie }) => {
-    if (!movie) return null;
+const fmt = (n) => (n >= 1e9 ? `$${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `$${Math.round(n / 1e6)}M` : `$${n.toLocaleString()}`);
 
-    const posterSrc = movie.poster_path
-        ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
-        : `https://source.unsplash.com/300x450/?${encodeURIComponent(movie.title)}`;
+// The programme card: the film's facts as a credits block.
+const MovieCard = ({ movie, crew, region = 'US', localDate }) => {
+    if (!movie) return null;
+    const director = crew.filter((c) => c.job === 'Director');
+    const writers = crew.filter((c) => c.department === 'Writing').slice(0, 3);
+    const people = (list) => list.map((p, i) => (
+        <span key={p.credit_id}><Link to={`/actors/${p.id}`}>{p.name}</Link>{i < list.length - 1 ? ', ' : ''}</span>
+    ));
+
+    const rows = [
+        director.length > 0 && ['Directed by', people(director)],
+        writers.length > 0 && ['Written by', people(writers)],
+        movie.release_date && ['Released', new Date(movie.release_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })],
+        localDate && localDate !== movie.release_date && [region === 'ID' ? 'In Indonesia' : 'In the US', new Date(localDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })],
+        movie.production_countries?.length > 0 && ['Country', movie.production_countries.map((c) => c.name).join(', ')],
+        movie.vote_average > 0 && ['Audience', <span><span className="num">{movie.vote_average.toFixed(1)}</span> / 10, {movie.vote_count?.toLocaleString()} votes</span>],
+        movie.budget > 0 && ['Budget', <span className="num">{fmt(movie.budget)}</span>],
+        movie.revenue > 0 && ['Box office', (
+            <span>
+                <span className="num">{fmt(movie.revenue)}</span>
+                {movie.budget > 0 && <span className={movie.revenue >= movie.budget ? 'gain' : 'loss'}> {movie.revenue >= movie.budget ? 'earned back' : 'lost'} {fmt(Math.abs(movie.revenue - movie.budget))}</span>}
+            </span>
+        )],
+    ].filter(Boolean);
 
     return (
-        <div id='movie-detail'>
-            <h2>{movie.title}</h2>
-            <div className='movie-detail-layout'>
-                <div className='movie-detail-poster'>
-                    <img src={posterSrc} alt={movie.title} />
-                </div>
-                <div className='movie-detail-info'>
-                    {movie.genres && movie.genres.length > 0 && (
-                        <div className='info-row'>
-                            <span className='info-label'>Genres</span>
-                            <div className='genre-tags'>
-                                {movie.genres.map(genre => (
-                                    <span key={genre.id} className='genre-tag'>{genre.name}</span>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                    <div className='info-row'>
-                        <span className='info-label'>Released</span>
-                        <span>{movie.release_date}</span>
-                    </div>
-                    <div className='info-row'>
-                        <span className='info-label'>Runtime</span>
-                        <span>{movie.runtime} min</span>
-                    </div>
-                    {movie.vote_average > 0 && (
-                        <div className='info-row'>
-                            <span className='info-label'>Rating</span>
-                            <span className='rating-display'>
-                                ★ {movie.vote_average.toFixed(1)}
-                                <span className='rating-sub'> / 10</span>
-                            </span>
-                        </div>
-                    )}
-                    <div className='info-row'>
-                        <span className='info-label'>Overview</span>
-                        <p className='overview-text'>{movie.overview}</p>
-                    </div>
-                    {movie.imdb_id && (
-                        <a
-                            href={`https://www.imdb.com/title/${movie.imdb_id}`}
-                            target="_blank"
-                            rel='noreferrer'
-                            className='imdb-btn'
-                        >
-                            View on IMDb
-                        </a>
-                    )}
-                </div>
-            </div>
-        </div>
+        <dl className="factsheet">
+            {rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+        </dl>
     );
 };
 

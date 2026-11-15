@@ -1,62 +1,43 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { FiAlertCircle, FiArrowRight } from 'react-icons/fi';
 import '../App.css';
 
-//components
-import ReviewList from "../components/ReviewList";
+import ReviewList from '../components/ReviewList';
+import LoadingSpinner from '../components/LoadingSpinner';
+import WarmingUp from '../components/WarmingUp';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
-import LoadingSpinner from "../components/LoadingSpinner";
-
+import { useReviews, useFilms, useTitle } from '../hooks';
 
 const Reviews = () => {
-    const [reviews, setReviews] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    useTitle('Reviews');
+    const { reviews, loading, slow, error } = useReviews();
+    const films = useFilms(reviews);
+    const has = reviews?.length > 0;
 
-    useEffect(() => {
-        const fetchReviews = async () => {
-            try {
-                const response = await axios.get(
-                    'https://my-movie-review.onrender.com/reviews'
-                );
-                setReviews(response.data.data);
-            } catch (error) {
-                console.error('Error fetching reviews:', error);
-            } finally{
-                setIsLoading(false);
-            }
-        };
-
-        fetchReviews();
-    }, []);
-
-    return(
+    return (
         <div>
-            <NavBar/>
-            <main>
-                <article className="card" id="welcome">
-                <h2>Movie Review</h2>
-                    <p>
-                        Here are a few of my movie reviews, but fair warning, they're all written in Bahasa Indonesia,
-                        so I kindly ask that you don't set your expectations too high when it comes to my writing skills (hehe).
-                        While I may not be a professional critic, I pour my heart and soul into these reviews, sharing my candid thoughts and feelings about the films I've watched, often in a delightfully unpretentious and occasionally goofy manner.
+            <NavBar />
+            <main id="main" className="wrap">
+                <header className="page-head">
+                    <h1>Reviews</h1>
+                    <p className="mast__lede">
+                        Written in Bahasa Indonesia, so keep your expectations of my prose modest. I'm not a critic:
+                        these are candid notes on films I've watched, unpretentious and occasionally goofy.
                     </p>
-                </article>
-                {isLoading? (
-                    <LoadingSpinner/>
-                ) : (
-                    <div className="card-container" id="movies-container">
-                        <div className='content' id='reviews'>
-                            <ReviewList reviews={reviews}/>
-                        </div>
-                    </div>
-                    )
-                }
+                    <Link className="arrow-link" to="/diary">Shorter takes, in English: my Letterboxd diary <FiArrowRight aria-hidden="true" /></Link>
+                </header>
+                {error && !has && (
+                    <p className="alert" role="alert"><FiAlertCircle aria-hidden="true" /> {navigator.onLine === false ? "You're offline, and this device hasn't saved the reviews yet." : 'The reviews did not load. The server may still be waking; refresh in a moment.'}</p>
+                )}
+                {has && <ReviewList reviews={reviews} films={films} />}
+                {!has && loading && (slow ? <WarmingUp /> : <LoadingSpinner />)}
+                {!has && !loading && !error && <p className="empty">No reviews yet.</p>}
             </main>
-            <Footer/>
+            <Footer />
         </div>
-    )
-
-}
+    );
+};
 
 export default Reviews;
