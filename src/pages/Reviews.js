@@ -1,24 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
 import { FiAlertCircle } from 'react-icons/fi';
 import '../App.css';
 
 import ReviewList from '../components/ReviewList';
 import LoadingSpinner from '../components/LoadingSpinner';
+import WarmingUp from '../components/WarmingUp';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useReviews, useFilms } from '../hooks';
 
 const Reviews = () => {
-    const [reviews, setReviews] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        axios.get('https://my-movie-review.onrender.com/reviews')
-            .then((r) => setReviews(r.data.data))
-            .catch(() => setError('The reviews did not load. The server sleeps when idle, so give it 30 seconds and refresh.'))
-            .finally(() => setIsLoading(false));
-    }, []);
+    const { reviews, loading, slow, error } = useReviews();
+    const films = useFilms(reviews);
+    const has = reviews?.length > 0;
 
     return (
         <div>
@@ -31,10 +25,12 @@ const Reviews = () => {
                         these are candid notes on films I've watched, unpretentious and occasionally goofy.
                     </p>
                 </header>
-                {error && <p className="alert" role="alert"><FiAlertCircle aria-hidden="true" /> {error}</p>}
-                {isLoading ? <LoadingSpinner /> : reviews.length > 0
-                    ? <ReviewList reviews={reviews} />
-                    : !error && <p className="empty">No reviews yet.</p>}
+                {error && !has && (
+                    <p className="alert" role="alert"><FiAlertCircle aria-hidden="true" /> The reviews did not load. The server may still be waking; refresh in a moment.</p>
+                )}
+                {has && <ReviewList reviews={reviews} films={films} />}
+                {!has && loading && (slow ? <WarmingUp /> : <LoadingSpinner />)}
+                {!has && !loading && !error && <p className="empty">No reviews yet.</p>}
             </main>
             <Footer />
         </div>

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { wakeReviews } from './api/reviews';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import '@fontsource/bowlby-one/400';
@@ -16,6 +17,12 @@ import About from './pages/About';
 import ActorDetail from './pages/ActorDetail';
 
 function App() {
+  // Nudge the sleeping reviews server awake on any first page, idle-time so it never competes with TMDb.
+  useEffect(() => {
+    const idle = window.requestIdleCallback || ((fn) => window.setTimeout(fn, 1500));
+    idle(wakeReviews);
+  }, []);
+
   return (
     <div className="App">
       <Router>

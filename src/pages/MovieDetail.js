@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import { FiAlertCircle, FiArrowLeft, FiPlay, FiExternalLink } from 'react-icons/fi';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { FiAlertCircle, FiArrowLeft, FiPlay, FiExternalLink, FiArrowRight } from 'react-icons/fi';
 import '../App.css';
 
 import MovieCard from '../components/MovieCard';
@@ -12,6 +12,7 @@ import TrailerModal from '../components/TrailerModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import NavBar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { cachedReviews, loadReviews, reviewForImdb } from '../api/reviews';
 
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
 const TMDB_BASE = 'https://api.themoviedb.org/3';
@@ -23,6 +24,16 @@ const MovieDetail = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showTrailer, setShowTrailer] = useState(false);
+    const [myReview, setMyReview] = useState(null);
+
+    // Did Adit review this one? Cached list first, then the fresh one.
+    useEffect(() => {
+        if (!movie?.imdb_id) { setMyReview(null); return undefined; }
+        let alive = true;
+        setMyReview(reviewForImdb(movie.imdb_id, cachedReviews()));
+        loadReviews().then((list) => alive && setMyReview(reviewForImdb(movie.imdb_id, list))).catch(() => {});
+        return () => { alive = false; };
+    }, [movie?.imdb_id]);
 
     useEffect(() => {
         setIsLoading(true); setError(null); setMovie(null);
@@ -81,6 +92,13 @@ const MovieDetail = () => {
                                 <WatchProviders providers={movie['watch/providers']?.results} />
                             </aside>
                             <div className="note__body">
+                                {myReview && (
+                                    <Link className="reviewed" to={`/reviews/${myReview.review_id}`}>
+                                        <span className="reviewed__label">Adit reviewed this</span>
+                                        <span className="reviewed__title">{myReview.review_title}</span>
+                                        <span className="reviewed__go">Read the review <FiArrowRight aria-hidden="true" /></span>
+                                    </Link>
+                                )}
                                 {movie.tagline && <p className="note__tagline">{movie.tagline}</p>}
                                 {movie.overview && <p className="note__overview">{movie.overview}</p>}
                                 {cast.length > 0 && (
