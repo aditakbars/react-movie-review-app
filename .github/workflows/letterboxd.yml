@@ -59,6 +59,20 @@ jobs:
           git commit -m "Update Letterboxd diary"
           git push
 
+      - name: Check the API keys
+        if: steps.diff.outputs.changed == 'true' || inputs.deploy
+        run: |
+          missing=""
+          [ -n "$TMDB" ] || missing="$missing TMDB_KEY"
+          [ -n "$OMDB" ] || missing="$missing OMDB_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing. Not deploying a site that cannot load its listings."
+            exit 1
+          fi
+        env:
+          TMDB: ${{ secrets.TMDB_KEY }}
+          OMDB: ${{ secrets.OMDB_KEY }}
+
       - name: Build the site
         if: steps.diff.outputs.changed == 'true' || inputs.deploy
         run: |
