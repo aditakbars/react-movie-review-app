@@ -6,6 +6,10 @@ This is a React web application that allows users to explore movies, read review
 
 The React Movie Review App is a web application built using React.js. It fetches movie data from The Movie Database (TMDb) API and provides information about currently playing movies, allows users to search for movies, read reviews, and explore details about each movie. 
 
+## Live site
+
+**https://cinema.aditakbars.com**, served by Firebase Hosting (site `react-movie-review-app`). The DNS for the subdomain is in Cloudflare and must stay **DNS only** (grey cloud). The old address `react-movie-review-app.web.app` still works, but a small script at the top of `public/index.html` sends visitors on to the custom domain with the same path.
+
 ## Features
 
 - **Home Page:** Displays a list of currently playing movies and a Search Movie feature.
