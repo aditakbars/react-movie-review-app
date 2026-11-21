@@ -115,7 +115,80 @@ const heart = (ctx, x, y, s, color) => {
     ctx.fill(); ctx.restore();
 };
 
-const shortDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase();
+/* Worn ink: punch random specks out of a stamp canvas (fixed seed, same every time). */
+const wear = (g, w, h, specks, seed0 = 7) => {
+    g.globalCompositeOperation = 'destination-out';
+    let seed = seed0;
+    const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let k = 0; k < specks; k += 1) {
+        g.globalAlpha = 0.25 + rand() * 0.6;
+        g.beginPath(); g.arc(rand() * w, rand() * h, 0.6 + rand() * 2.4, 0, Math.PI * 2); g.fill();
+    }
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+};
+const press = (ctx, stampCanvas, cx, cy, degrees, alpha = 0.93) => {
+    ctx.save();
+    ctx.translate(cx, cy); ctx.rotate((degrees * Math.PI) / 180); ctx.globalAlpha = alpha;
+    ctx.drawImage(stampCanvas, -stampCanvas.width / 2, -stampCanvas.height / 2);
+    ctx.restore();
+};
+
+const INK = '#e23a2c';
+const blank = (w, h) => { const c = document.createElement('canvas'); c.width = Math.ceil(w); c.height = Math.ceil(h); return [c, c.getContext('2d')]; };
+
+/* A ticket outline with half-moon notches at the corners and sides. */
+const ticketPath = (g, x, y, w, h, notch) => {
+    g.beginPath();
+    g.moveTo(x + notch, y); g.lineTo(x + w - notch, y);
+    g.arc(x + w, y, notch, Math.PI, Math.PI / 2, true);
+    g.lineTo(x + w, y + h / 2 - notch); g.arc(x + w, y + h / 2, notch, -Math.PI / 2, Math.PI / 2, true);
+    g.lineTo(x + w, y + h - notch); g.arc(x + w, y + h, notch, -Math.PI / 2, Math.PI, true);
+    g.lineTo(x + notch, y + h); g.arc(x, y + h, notch, 0, -Math.PI / 2, true);
+    g.lineTo(x, y + h / 2 + notch); g.arc(x, y + h / 2, notch, Math.PI / 2, -Math.PI / 2, true);
+    g.lineTo(x, y + notch); g.arc(x, y, notch, Math.PI / 2, 0, true);
+    g.closePath();
+};
+
+/* The signature: a red ticket-shaped rubber stamp, ADIT'S / CINEMA, ★ EST. 2023 ★. */
+const ticketStamp = () => {
+    const [c, g] = blank(330, 212);
+    g.strokeStyle = INK; g.fillStyle = INK;
+    g.lineWidth = 7; ticketPath(g, 8, 8, 314, 196, 20); g.stroke();
+    g.setLineDash([8, 7]); g.lineWidth = 2.5; ticketPath(g, 23, 23, 284, 166, 13); g.stroke(); g.setLineDash([]);
+    g.textAlign = 'center';
+    g.font = `400 54px ${SIGN}`; g.fillText("ADIT'S", 165, 96); g.fillText('CINEMA', 165, 148);
+    g.font = `800 17px ${BODY}`; g.textAlign = 'left'; spaced(g, '★ EST. 2023 ★', 165 - 66, 180, 3);
+    wear(g, c.width, c.height, Math.round((c.width * c.height) / 90), 7);
+    return c;
+};
+
+/* The diary date as a small postage stamp: serrated cream paper, red ink, a drop shadow. */
+const postageStamp = (watched) => {
+    const d = new Date(watched);
+    const mon = d.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase().replace('SEPT', 'SEP');
+    const w = 116; const h = 94; const R = 5;
+    const [paper, pg] = blank(w, h);
+    pg.fillStyle = C.panel; pg.fillRect(0, 0, w, h);
+    pg.globalCompositeOperation = 'destination-out';
+    const holes = [];
+    for (let x = R; x < w; x += R * 2.4) holes.push([x, 0], [x, h]);
+    for (let y = R; y < h; y += R * 2.4) holes.push([0, y], [w, y]);
+    holes.forEach(([hx, hy]) => { pg.beginPath(); pg.arc(hx, hy, R, 0, Math.PI * 2); pg.fill(); });
+    pg.globalCompositeOperation = 'source-over';
+    const [ink, ig] = blank(w, h);
+    ig.strokeStyle = INK; ig.fillStyle = INK; ig.textAlign = 'center';
+    ig.lineWidth = 2; ig.strokeRect(11, 11, w - 22, h - 22);
+    ig.font = `800 13px ${BODY}`; ig.fillText('DIARY', w / 2, 30);
+    ig.font = `400 28px ${SIGN}`; ig.fillText(String(d.getDate()), w / 2, 57);
+    ig.font = `800 12px ${BODY}`; ig.fillText(`${mon} ${d.getFullYear()}`, w / 2, 74);
+    wear(ig, w, h, 45, 31);
+    pg.drawImage(ink, 0, 0);
+    const [t, tg] = blank(w + 5, h + 5);
+    tg.drawImage(paper, 5, 5); tg.globalCompositeOperation = 'source-in'; tg.fillStyle = C.edge; tg.fillRect(0, 0, w + 5, h + 5);
+    tg.globalCompositeOperation = 'source-over'; tg.drawImage(paper, 0, 0);
+    return t;
+};
+
 const longDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
 /*
@@ -148,18 +221,10 @@ export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com')
         ctx.beginPath(); ctx.arc(x, STILL_H + 19, 6, 0, Math.PI * 2); ctx.fillStyle = C.bulb; ctx.fill();
     }
 
-    // Brand + date pill (just below Instagram's top bar)
-    ctx.font = `400 40px ${SIGN}`;
-    ctx.fillStyle = C.edge; ctx.fillText("ADIT'S CINEMA", 83, 283);
-    ctx.fillStyle = C.yellow; ctx.fillText("ADIT'S CINEMA", 80, 280);
+    // One small mark at the top right, just below Instagram's top bar: the diary date
     if (film.watched) {
-        ctx.font = `800 24px ${BODY}`;
-        const label = `DIARY · ${shortDate(film.watched)}`;
-        const tw = [...label].reduce((s, ch) => s + ctx.measureText(ch).width + 3.4, -3.4);
-        const px = W - 80 - tw - 32;
-        ctx.fillStyle = C.edge; ctx.fillRect(px - 4, 238, tw + 40, 56);
-        ctx.fillStyle = C.red; ctx.fillRect(px, 242, tw + 32, 48);
-        ctx.fillStyle = C.paper; spaced(ctx, label, px + 16, 275, 3.4);
+        const ps = postageStamp(film.watched);
+        press(ctx, ps, W - 80 - ps.width / 2, 236 + ps.height / 2, -6, 0.98);
     }
 
     const noReview = !film.review;
@@ -218,6 +283,7 @@ export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com')
     y = Math.max(y + R * 2, posterBottom) + 50;
 
     const FOOT_Y = SAFE_BOTTOM - 20;
+    let panel = null;
     if (!noReview) {
         // The review, on a cream panel, as big as it can be
         const PX = 80; const PW = W - 160 - 10; const PAD = 38;
@@ -231,14 +297,20 @@ export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com')
         ctx.fillStyle = C.panel; ctx.fillRect(PX, y, PW, PH);
         ctx.font = `${quote.size >= 52 ? 800 : 600} ${quote.size}px ${BODY}`; ctx.fillStyle = C.panelInk;
         quote.lines.forEach((line, i) => ctx.fillText(line, PX + PAD, y + PAD + quote.size * 0.95 + i * quote.size * 1.3));
+        panel = { x: PX, y, w: PW, h: PH };
     } else if (film.watched) {
         ctx.font = `600 34px ${BODY}`; ctx.fillStyle = C.ink2;
         ctx.fillText(`Watched ${longDate(film.watched)}`, 80, y + 10);
     }
 
-    // Footer, just above Instagram's reply box
-    ctx.font = `800 26px ${BODY}`; ctx.fillStyle = C.muted;
-    spaced(ctx, "ADIT'S DIARY", 80, FOOT_Y, 2.6);
+    // The signature: the ticket stamp pressed on the panel's bottom-left corner. It
+    // only touches the panel's edge, never the words, so the review keeps its size.
+    const ts = ticketStamp();
+    const sx = panel ? panel.x + 30 + ts.width / 2 : 80 + ts.width / 2;
+    const sy = panel ? panel.y + panel.h + 2 + ts.height / 2 : FOOT_Y - ts.height / 2 - 10;
+    press(ctx, ts, sx, sy, -8);
+
+    // The site, on its own line, just above Instagram's reply box
     ctx.font = `800 30px ${BODY}`; ctx.fillStyle = C.yellow;
     ctx.textAlign = 'right'; ctx.fillText(domain, W - 80, FOOT_Y); ctx.textAlign = 'left';
 };
