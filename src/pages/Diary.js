@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiExternalLink, FiRepeat, FiHeart } from 'react-icons/fi';
+import { FiExternalLink, FiRepeat, FiHeart, FiShare } from 'react-icons/fi';
 import '../App.css';
 
 import NavBar from '../components/Navbar';
@@ -8,6 +8,7 @@ import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Stars from '../components/Stars';
 import Billboards from '../components/Billboards';
+import ShareCard from '../components/ShareCard';
 import { useDiary, useTitle } from '../hooks';
 
 const monthName = (d) => new Date(d).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
@@ -15,6 +16,7 @@ const monthName = (d) => new Date(d).toLocaleDateString('en-GB', { month: 'long'
 /* The Letterboxd diary as a printed programme: a month per section, a film per night. */
 const Diary = () => {
     useTitle('Diary');
+    const [sharing, setSharing] = useState(null);
     const { entries, ratings, watchedCount, profileUrl, updated, loaded } = useDiary();
 
     const months = useMemo(() => {
@@ -88,6 +90,11 @@ const Diary = () => {
                                             {e.rating ? <Stars rating={e.rating} /> : <span className="entry__muted">No rating</span>}
                                             {e.rewatch && <span className="entry__muted"><FiRepeat aria-hidden="true" /> Rewatch</span>}
                                             {e.liked && <span className="entry__muted"><FiHeart aria-hidden="true" /> Liked</span>}
+                                            {e.tmdbId && (
+                                                <button type="button" className="entry__share" onClick={() => setSharing(e)} aria-label={`Share ${e.title} as an Instagram Story`}>
+                                                    <FiShare aria-hidden="true" /> Share
+                                                </button>
+                                            )}
                                         </p>
                                         {e.review && (e.spoiler
                                             ? <p className="entry__muted">Review hidden: it has spoilers. <a href={e.url} target="_blank" rel="noreferrer">Read it on Letterboxd</a></p>
@@ -128,6 +135,7 @@ const Diary = () => {
                 )}
                 {updated && <p className="diary__updated">Last synced {new Date(updated).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.</p>}
             </main>
+            {sharing && <ShareCard entry={sharing} onClose={() => setSharing(null)} />}
             <Footer />
         </div>
     );

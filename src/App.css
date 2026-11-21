@@ -614,3 +614,23 @@ img { display: block; max-width: 100%; height: auto; } /* width/height attribute
 .numbers__five { margin-top: 56px; }
 .numbers__count { font-family: var(--body); font-size: 15px; color: var(--muted); margin-left: 6px; }
 .years__numbers { border-style: dashed !important; }
+
+/* ── Share card (Instagram Story) ── */
+.sharecard { overflow-y: auto; align-items: start; background: #0d0a08; }
+.sharecard__box { position: relative; display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 64px auto 24px; }
+.sharecard__close { top: -58px; right: 0; }
+.sharecard__stage { position: relative; width: min(360px, 78vw, calc((100vh - 230px) * 9 / 16)); aspect-ratio: 9 / 16; background: #15110e; border: 4px solid #000; outline: 3px solid #6a4a2c; }
+.sharecard__canvas { width: 100%; height: 100%; display: block; }
+.sharecard__status { position: absolute; inset: 0; display: grid; place-items: center; color: #f1e6cf; font-weight: 700; background: rgba(21, 17, 14, .7); }
+.sharecard__stills { display: flex; align-items: center; gap: 8px; color: #f1e6cf; font-weight: 700; font-size: 15px; }
+.sharecard__stills .icon-btn { color: #f5c21c; }
+.sharecard__note { color: #d3c5a8; font-size: 14px; max-width: 360px; text-align: center; }
+.sharecard__actions { display: flex; align-items: center; gap: 18px; }
+.sharecard__actions .btn[disabled], .sharecard__actions .text-btn[disabled] { opacity: .5; cursor: wait; }
+.sharecard__dl { color: #f5c21c; display: inline-flex; align-items: center; gap: 6px; }
+.share-btn { display: inline-flex; align-items: center; gap: 8px; }
+.entry__share { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 2px 12px; background: none; border: 2px solid var(--line); border-radius: 3px; color: var(--ink-2); font-weight: 700; font-size: 14px; cursor: pointer; }
+.take__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+@media (hover: hover) and (pointer: fine) {
+  .entry__share:hover { border-color: var(--hi); color: var(--ink); }
+}
