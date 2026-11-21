@@ -172,6 +172,153 @@ const dateStamp = (label) => {
     return tag;
 };
 
+
+/* ---------- Stamp styles (options being compared) ---------- */
+const INK = '#e23a2c';
+const blank = (w, h) => { const c = document.createElement('canvas'); c.width = Math.ceil(w); c.height = Math.ceil(h); return [c, c.getContext('2d')]; };
+const fitFont = (g, text, family, weight, max, width) => {
+    let size = max;
+    g.font = `${weight} ${size}px ${family}`;
+    while (size > 10 && g.measureText(text).width > width) { size -= 1; g.font = `${weight} ${size}px ${family}`; }
+    return size;
+};
+/* Letters along a circle: on top reading clockwise, or along the bottom reading left to right. */
+const arcText = (g, text, cx, cy, radius, top, spacing = 1) => {
+    const chars = [...text];
+    const widths = chars.map((ch) => g.measureText(ch).width * spacing);
+    const total = widths.reduce((a, b) => a + b, 0) / radius;
+    let a = top ? -Math.PI / 2 - total / 2 : Math.PI / 2 + total / 2;
+    chars.forEach((ch, i) => {
+        const half = widths[i] / 2 / radius;
+        a += top ? half : -half;
+        g.save(); g.translate(cx + radius * Math.cos(a), cy + radius * Math.sin(a));
+        g.rotate(top ? a + Math.PI / 2 : a - Math.PI / 2);
+        g.textAlign = 'center'; g.fillText(ch, 0, 0); g.restore();
+        a += top ? half : -half;
+    });
+};
+const ticketPath = (g, x, y, w, h, notch) => {
+    g.beginPath();
+    g.moveTo(x + notch, y); g.lineTo(x + w - notch, y);
+    g.arc(x + w, y, notch, Math.PI, Math.PI / 2, true);
+    g.lineTo(x + w, y + h / 2 - notch); g.arc(x + w, y + h / 2, notch, -Math.PI / 2, Math.PI / 2, true);
+    g.lineTo(x + w, y + h - notch); g.arc(x + w, y + h, notch, -Math.PI / 2, Math.PI, true);
+    g.lineTo(x + notch, y + h); g.arc(x, y + h, notch, 0, -Math.PI / 2, true);
+    g.lineTo(x, y + h / 2 + notch); g.arc(x, y + h / 2, notch, Math.PI / 2, -Math.PI / 2, true);
+    g.lineTo(x, y + notch); g.arc(x, y, notch, Math.PI / 2, 0, true);
+    g.closePath();
+};
+
+/* Bottom: ADIT'S CINEMA. Returns { canvas, anchor } where anchor is how far the
+   stamp's top may overlap the panel (it only ever covers the panel's padding). */
+export const NAME_STYLES = ['box', 'seal', 'ticket', 'postmark'];
+const nameStampStyled = (style) => {
+    let c; let g;
+    if (style === 'box') {
+        [c, g] = blank(300, 196);
+        g.strokeStyle = INK; g.fillStyle = INK;
+        g.lineWidth = 7; g.strokeRect(6, 6, 288, 184);
+        g.lineWidth = 2; g.strokeRect(18, 18, 264, 160);
+        g.textAlign = 'center';
+        g.font = `400 52px ${SIGN}`; g.fillText("ADIT'S", 150, 82); g.fillText('CINEMA', 150, 134);
+        g.font = `800 17px ${BODY}`; g.textAlign = 'left'; spaced(g, '★ EST. 2023 ★', 150 - 66, 164, 3);
+    } else if (style === 'seal') {
+        [c, g] = blank(250, 250);
+        const o = 125;
+        g.strokeStyle = INK; g.fillStyle = INK;
+        g.lineWidth = 7; g.beginPath(); g.arc(o, o, 116, 0, Math.PI * 2); g.stroke();
+        g.lineWidth = 2; g.beginPath(); g.arc(o, o, 104, 0, Math.PI * 2); g.stroke();
+        g.lineWidth = 2; g.beginPath(); g.arc(o, o, 56, 0, Math.PI * 2); g.stroke();
+        g.font = `400 34px ${SIGN}`;
+        arcText(g, "ADIT'S", o, o, 70, true, 1.25);
+        arcText(g, 'CINEMA', o, o, 92, false, 1.18);
+        g.font = `400 56px ${BODY}`; g.textAlign = 'center'; g.fillText('★', o, o + 20);
+        g.font = `400 22px ${BODY}`; g.fillText('★', o - 96, o + 8); g.fillText('★', o + 96, o + 8);
+    } else if (style === 'ticket') {
+        [c, g] = blank(380, 168);
+        g.strokeStyle = INK; g.fillStyle = INK;
+        g.lineWidth = 6; ticketPath(g, 8, 8, 364, 152, 18); g.stroke();
+        g.setLineDash([7, 7]); g.lineWidth = 2; ticketPath(g, 22, 22, 336, 124, 12); g.stroke(); g.setLineDash([]);
+        g.font = `800 17px ${BODY}`; spaced(g, 'ADMIT ONE', 190 - 64, 58, 5);
+        const fs = fitFont(g, "ADIT'S CINEMA", SIGN, 400, 48, 300);
+        g.textAlign = 'center'; g.font = `400 ${fs}px ${SIGN}`; g.fillText("ADIT'S CINEMA", 190, 112);
+        g.font = `800 15px ${BODY}`; g.fillText('★  ★  ★', 190, 138);
+    } else {
+        [c, g] = blank(470, 210);
+        const o = 105;
+        g.strokeStyle = INK; g.fillStyle = INK;
+        g.lineWidth = 6; g.beginPath(); g.arc(o, o, 96, 0, Math.PI * 2); g.stroke();
+        g.lineWidth = 2; g.beginPath(); g.arc(o, o, 84, 0, Math.PI * 2); g.stroke();
+        g.textAlign = 'center'; g.font = `400 34px ${SIGN}`;
+        g.fillText("ADIT'S", o, o - 2); g.fillText('CINEMA', o, o + 34);
+        g.font = `800 14px ${BODY}`; g.fillText('★ ★ ★', o, o - 44);
+        // Wavy cancellation lines trailing to the right
+        g.lineWidth = 5;
+        [-46, -16, 14, 44].forEach((dy) => {
+            g.beginPath();
+            for (let x = 0; x <= 250; x += 4) {
+                const px = o + 104 + x; const py = o + dy + Math.sin(x / 16) * 7;
+                if (x) g.lineTo(px, py); else g.moveTo(px, py);
+            }
+            g.stroke();
+        });
+    }
+    wear(g, c.width, c.height, Math.round((c.width * c.height) / 90), 7);
+    return c;
+};
+
+/* Top: the diary date, small. Each sits on cream paper so it reads on any still. */
+export const DATE_STYLES = ['tag', 'due', 'round'];
+const paperBacked = (ink, pad, shape, shadow = 6) => {
+    const [t, g] = blank(ink.width + shadow, ink.height + shadow);
+    g.fillStyle = C.edge;
+    if (shape === 'round') { g.beginPath(); g.arc(ink.width / 2 + shadow, ink.height / 2 + shadow, ink.width / 2, 0, Math.PI * 2); g.fill(); }
+    else g.fillRect(shadow, shadow, ink.width, ink.height);
+    g.fillStyle = C.panel;
+    if (shape === 'round') { g.beginPath(); g.arc(ink.width / 2, ink.height / 2, ink.width / 2, 0, Math.PI * 2); g.fill(); }
+    else g.fillRect(0, 0, ink.width, ink.height);
+    g.drawImage(ink, 0, 0);
+    return t;
+};
+const dateStampStyled = (style, watched) => {
+    const d = new Date(watched);
+    const day = d.getDate(); const mon = d.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase().replace('SEPT', 'SEP'); const yr = d.getFullYear();
+    let c; let g;
+    if (style === 'tag') {
+        const label = `DIARY · ${day} ${mon} ${yr}`;
+        [c, g] = blank(10, 10); g.font = `800 18px ${BODY}`;
+        const tw = [...label].reduce((t, ch) => t + g.measureText(ch).width + 2.6, -2.6);
+        [c, g] = blank(tw + 48, 56);
+        g.strokeStyle = INK; g.fillStyle = INK;
+        g.lineWidth = 4; g.strokeRect(5, 5, c.width - 10, c.height - 10);
+        g.lineWidth = 1.5; g.strokeRect(11, 11, c.width - 22, c.height - 22);
+        g.font = `800 18px ${BODY}`; spaced(g, label, 24, 35, 2.6);
+        wear(g, c.width, c.height, 160, 11);
+        return paperBacked(c, 0, 'rect');
+    }
+    if (style === 'due') {
+        [c, g] = blank(196, 92);
+        g.strokeStyle = INK; g.fillStyle = INK;
+        g.lineWidth = 3; g.strokeRect(4, 4, 188, 84);
+        g.beginPath(); g.moveTo(4, 32); g.lineTo(192, 32); g.stroke();
+        g.font = `800 15px ${BODY}`; spaced(g, 'SEEN', 16, 24, 4);
+        g.textAlign = 'right'; g.font = `800 15px ${BODY}`; g.fillText('DIARY', 180, 24); g.textAlign = 'left';
+        g.font = `800 34px ${BODY}`; g.textAlign = 'center'; g.fillText(`${day} ${mon} ${String(yr).slice(2)}`, 98, 74);
+        wear(g, c.width, c.height, 170, 13);
+        return paperBacked(c, 0, 'rect');
+    }
+    [c, g] = blank(132, 132);
+    const o = 66;
+    g.strokeStyle = INK; g.fillStyle = INK;
+    g.lineWidth = 4; g.beginPath(); g.arc(o, o, 58, 0, Math.PI * 2); g.stroke();
+    g.lineWidth = 1.5; g.beginPath(); g.arc(o, o, 50, 0, Math.PI * 2); g.stroke();
+    g.font = `800 13px ${BODY}`; arcText(g, 'DIARY', o, o, 37, true, 1.6); arcText(g, String(yr), o, o, 45, false, 1.6);
+    g.textAlign = 'center'; g.font = `400 30px ${SIGN}`; g.fillText(String(day), o, o + 8);
+    g.font = `800 15px ${BODY}`; g.fillText(mon, o, o + 28);
+    wear(g, c.width, c.height, 150, 17);
+    return paperBacked(c, 0, 'round');
+};
+
 const shortDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase();
 const longDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -180,7 +327,7 @@ const longDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric'
   images: { still, poster } (loaded Image objects or null)
   domain: printed in the footer
 */
-export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com', brand = 'stamp') => {
+export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com', brand = 'stamp', look = {}) => {
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
     ctx.textBaseline = 'alphabetic';
@@ -210,7 +357,10 @@ export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com',
         ctx.font = `800 20px ${BODY}`;
         const label = `DIARY · ${shortDate(film.watched)}`;
         const tw = [...label].reduce((s, ch) => s + ctx.measureText(ch).width + 3, -3);
-        if (brand === 'sign') {
+        if (look.date) {
+            const ds = dateStampStyled(look.date, film.watched);
+            press(ctx, ds, W - 80 - ds.width / 2, 250 + ds.height / 2 - 20, -6, 0.97);
+        } else if (brand === 'sign') {
             const ds = dateStamp(label);
             press(ctx, ds, W - 80 - ds.width / 2, 262, -5, 0.95);
         } else {
@@ -305,7 +455,15 @@ export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com',
         const r = 112;
         const cx = panel ? panel.x + 170 : 80 + r + 10;
         const cy = panel ? panel.y + panel.h + r - 28 : FOOT_Y - r - 10;
-        press(ctx, nameStamp(r), cx, cy, -10);
+        if (look.name) {
+            const ns = nameStampStyled(look.name);
+            const nx = panel ? panel.x + 30 + ns.width / 2 : 80 + ns.width / 2;
+            // Round stamps may dip ~20px into the panel's bottom padding; tilted
+            // rectangles lift a corner, so they only kiss the edge.
+            const dip = look.name === 'seal' || look.name === 'postmark' ? 20 : -2;
+            const ny = panel ? panel.y + panel.h - dip + ns.height / 2 : FOOT_Y - ns.height / 2 - 10;
+            press(ctx, ns, nx, ny, look.name === 'postmark' ? -4 : -8);
+        } else press(ctx, nameStamp(r), cx, cy, -10);
         ctx.font = `800 30px ${BODY}`; ctx.fillStyle = C.yellow;
         ctx.textAlign = 'right'; ctx.fillText(domain, W - 80, FOOT_Y); ctx.textAlign = 'left';
     } else if (brand === 'sign') {
