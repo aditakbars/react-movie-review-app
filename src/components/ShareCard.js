@@ -52,7 +52,7 @@ const ShareCard = ({ entry, onClose }) => {
                 drawCard(canvasRef.current, {
                     ...film, rating: entry.rating, watched: entry.watched, liked: entry.liked, rewatch: entry.rewatch,
                     review: entry.spoiler ? null : entry.review,
-                }, { still, poster });
+                }, { still, poster }, undefined, new URLSearchParams(window.location.search).get('brand') || undefined); // TEMP: brand preview
                 canvasRef.current.toBlob((b) => { if (alive) { setBlob(b); setStatus(''); } }, 'image/png');
             });
         return () => { alive = false; };

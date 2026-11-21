@@ -115,6 +115,63 @@ const heart = (ctx, x, y, s, color) => {
     ctx.fill(); ctx.restore();
 };
 
+/* Worn ink: punch random specks out of a stamp canvas (fixed seed, same every time). */
+const wear = (g, w, h, specks, seed0 = 7) => {
+    g.globalCompositeOperation = 'destination-out';
+    let seed = seed0;
+    const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let k = 0; k < specks; k += 1) {
+        g.globalAlpha = 0.25 + rand() * 0.6;
+        g.beginPath(); g.arc(rand() * w, rand() * h, 0.6 + rand() * 2.4, 0, Math.PI * 2); g.fill();
+    }
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+};
+const press = (ctx, stampCanvas, cx, cy, degrees, alpha = 0.93) => {
+    ctx.save();
+    ctx.translate(cx, cy); ctx.rotate((degrees * Math.PI) / 180); ctx.globalAlpha = alpha;
+    ctx.drawImage(stampCanvas, -stampCanvas.width / 2, -stampCanvas.height / 2);
+    ctx.restore();
+};
+
+/* Round red rubber stamp reading ADIT'S CINEMA, with a starred double ring. */
+const nameStamp = (r) => {
+    const s = document.createElement('canvas');
+    s.width = s.height = r * 2 + 20;
+    const g = s.getContext('2d'); const o = r + 10;
+    g.strokeStyle = C.red; g.fillStyle = C.red;
+    g.lineWidth = 8; g.beginPath(); g.arc(o, o, r - 5, 0, Math.PI * 2); g.stroke();
+    g.lineWidth = 3; g.beginPath(); g.arc(o, o, r - 18, 0, Math.PI * 2); g.stroke();
+    g.textAlign = 'center';
+    g.font = `400 ${Math.round(r * 0.18)}px ${BODY}`;
+    [-1, 1].forEach((side) => g.fillText('★', o + side * r * 0.62, o + r * 0.07));
+    g.font = `400 ${Math.round(r * 0.36)}px ${SIGN}`;
+    g.fillText("ADIT'S", o, o - r * 0.05);
+    g.fillText('CINEMA', o, o + r * 0.36);
+    wear(g, s.width, s.height, Math.round(r * 5));
+    return s;
+};
+
+/* Rectangular date stamp: DIARY · 15 JUN 2026 in a double border. */
+const dateStamp = (label) => {
+    const s = document.createElement('canvas');
+    const m = s.getContext('2d'); m.font = `800 24px ${BODY}`;
+    const tw = [...label].reduce((t, ch) => t + m.measureText(ch).width + 3, -3);
+    s.width = tw + 64; s.height = 74;
+    const g = s.getContext('2d');
+    g.strokeStyle = C.red; g.fillStyle = C.red;
+    g.lineWidth = 5; g.strokeRect(5, 5, s.width - 10, s.height - 10);
+    g.lineWidth = 2; g.strokeRect(13, 13, s.width - 26, s.height - 26);
+    g.font = `800 24px ${BODY}`; spaced(g, label, 32, 46, 3);
+    // Wear the ink only, then lay it on a cream paper tag
+    wear(g, s.width, s.height, 260, 11);
+    const tag = document.createElement('canvas'); tag.width = s.width + 12; tag.height = s.height + 12;
+    const t = tag.getContext('2d');
+    t.fillStyle = C.edge; t.fillRect(8, 8, s.width, s.height);
+    t.fillStyle = C.panel; t.fillRect(0, 0, s.width, s.height);
+    t.drawImage(s, 0, 0);
+    return tag;
+};
+
 const shortDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase();
 const longDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -123,7 +180,7 @@ const longDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric'
   images: { still, poster } (loaded Image objects or null)
   domain: printed in the footer
 */
-export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com') => {
+export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com', brand = 'stamp') => {
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
     ctx.textBaseline = 'alphabetic';
@@ -148,18 +205,20 @@ export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com')
         ctx.beginPath(); ctx.arc(x, STILL_H + 19, 6, 0, Math.PI * 2); ctx.fillStyle = C.bulb; ctx.fill();
     }
 
-    // Brand + date pill (just below Instagram's top bar)
-    ctx.font = `400 40px ${SIGN}`;
-    ctx.fillStyle = C.edge; ctx.fillText("ADIT'S CINEMA", 83, 283);
-    ctx.fillStyle = C.yellow; ctx.fillText("ADIT'S CINEMA", 80, 280);
+    // One small label at the top (just below Instagram's top bar): the diary date
     if (film.watched) {
-        ctx.font = `800 24px ${BODY}`;
+        ctx.font = `800 20px ${BODY}`;
         const label = `DIARY · ${shortDate(film.watched)}`;
-        const tw = [...label].reduce((s, ch) => s + ctx.measureText(ch).width + 3.4, -3.4);
-        const px = W - 80 - tw - 32;
-        ctx.fillStyle = C.edge; ctx.fillRect(px - 4, 238, tw + 40, 56);
-        ctx.fillStyle = C.red; ctx.fillRect(px, 242, tw + 32, 48);
-        ctx.fillStyle = C.paper; spaced(ctx, label, px + 16, 275, 3.4);
+        const tw = [...label].reduce((s, ch) => s + ctx.measureText(ch).width + 3, -3);
+        if (brand === 'sign') {
+            const ds = dateStamp(label);
+            press(ctx, ds, W - 80 - ds.width / 2, 262, -5, 0.95);
+        } else {
+            const px = W - 80 - tw - 28;
+            ctx.fillStyle = C.edge; ctx.fillRect(px - 3, 237, tw + 34, 46);
+            ctx.fillStyle = C.red; ctx.fillRect(px, 240, tw + 28, 40);
+            ctx.fillStyle = C.paper; spaced(ctx, label, px + 14, 267, 3);
+        }
     }
 
     const noReview = !film.review;
@@ -218,10 +277,12 @@ export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com')
     y = Math.max(y + R * 2, posterBottom) + 50;
 
     const FOOT_Y = SAFE_BOTTOM - 20;
+    const RESERVE = { stamp: 0, sign: 60, stub: 150 }[brand] || 0;
+    let panel = null;
     if (!noReview) {
         // The review, on a cream panel, as big as it can be
         const PX = 80; const PW = W - 160 - 10; const PAD = 38;
-        const room = FOOT_Y - 60 - y - PAD * 2;
+        const room = FOOT_Y - RESERVE - 60 - y - PAD * 2;
         const quote = fit(ctx, `“${film.review.trim()}”`, {
             font: (s) => `${s >= 52 ? 800 : 600} ${s}px ${BODY}`, max: 72, min: 30, width: PW - PAD * 2, height: room, lineHeight: 1.3,
         });
@@ -231,16 +292,43 @@ export const drawCard = (canvas, film, images, domain = 'cinema.aditakbars.com')
         ctx.fillStyle = C.panel; ctx.fillRect(PX, y, PW, PH);
         ctx.font = `${quote.size >= 52 ? 800 : 600} ${quote.size}px ${BODY}`; ctx.fillStyle = C.panelInk;
         quote.lines.forEach((line, i) => ctx.fillText(line, PX + PAD, y + PAD + quote.size * 0.95 + i * quote.size * 1.3));
+        panel = { x: PX, y, w: PW, h: PH };
     } else if (film.watched) {
         ctx.font = `600 34px ${BODY}`; ctx.fillStyle = C.ink2;
         ctx.fillText(`Watched ${longDate(film.watched)}`, 80, y + 10);
     }
 
-    // Footer, just above Instagram's reply box
-    ctx.font = `800 26px ${BODY}`; ctx.fillStyle = C.muted;
-    spaced(ctx, "ADIT'S DIARY", 80, FOOT_Y, 2.6);
-    ctx.font = `800 30px ${BODY}`; ctx.fillStyle = C.yellow;
-    ctx.textAlign = 'right'; ctx.fillText(domain, W - 80, FOOT_Y); ctx.textAlign = 'left';
+    // The signature, just above Instagram's reply box
+    if (brand === 'stamp') {
+        // Pressed on the panel's bottom-left corner: it covers the border and the
+        // padding only, never the words; the review keeps its full size.
+        const r = 112;
+        const cx = panel ? panel.x + 170 : 80 + r + 10;
+        const cy = panel ? panel.y + panel.h + r - 28 : FOOT_Y - r - 10;
+        press(ctx, nameStamp(r), cx, cy, -10);
+        ctx.font = `800 30px ${BODY}`; ctx.fillStyle = C.yellow;
+        ctx.textAlign = 'right'; ctx.fillText(domain, W - 80, FOOT_Y); ctx.textAlign = 'left';
+    } else if (brand === 'sign') {
+        ctx.font = `400 78px ${SIGN}`;
+        ['#000', C.red].forEach((col, k) => { ctx.fillStyle = col; ctx.fillText("ADIT'S CINEMA", 80 + (k ? 5 : 10), FOOT_Y - 8 + (k ? 5 : 10)); });
+        ctx.fillStyle = C.yellow; ctx.fillText("ADIT'S CINEMA", 80, FOOT_Y - 8);
+        ctx.font = `800 26px ${BODY}`; ctx.fillStyle = C.ink2;
+        spaced(ctx, domain.toUpperCase(), 84, FOOT_Y + 34, 3);
+    } else if (brand === 'stub') {
+        const sy = FOOT_Y - 120; const sh = 140;
+        ctx.fillStyle = C.edge; ctx.fillRect(66, sy + 6, W - 132, sh);
+        ctx.fillStyle = C.panel; ctx.fillRect(60, sy, W - 132, sh);
+        ctx.fillStyle = C.wall;
+        [[60, sy + sh / 2], [W - 72, sy + sh / 2]].forEach(([nx, ny]) => { ctx.beginPath(); ctx.arc(nx, ny, 22, 0, Math.PI * 2); ctx.fill(); });
+        ctx.strokeStyle = C.panelInk; ctx.lineWidth = 4; ctx.setLineDash([10, 10]);
+        ctx.beginPath(); ctx.moveTo(W - 330, sy + 18); ctx.lineTo(W - 330, sy + sh - 18); ctx.stroke(); ctx.setLineDash([]);
+        ctx.font = `800 20px ${BODY}`; ctx.fillStyle = C.red; spaced(ctx, 'ADMIT ONE', 110, sy + 44, 5);
+        ctx.font = `400 60px ${SIGN}`; ctx.fillStyle = C.panelInk; ctx.fillText("ADIT'S CINEMA", 113, sy + 113);
+        ctx.fillStyle = C.red; ctx.fillText("ADIT'S CINEMA", 110, sy + 110);
+        ctx.font = `800 21px ${BODY}`; ctx.fillStyle = C.panelInk;
+        const [host, ...rest] = domain.split('.');
+        ctx.fillText(`${host}.`, W - 300, sy + 64); ctx.fillText(rest.join('.'), W - 300, sy + 94);
+    }
 };
 
 export const fileName = (film) => `adits-cinema-${film.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}${film.watched ? `-${film.watched}` : ''}.png`;
