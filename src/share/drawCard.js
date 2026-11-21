@@ -176,12 +176,6 @@ const dateStamp = (label) => {
 /* ---------- Stamp styles (options being compared) ---------- */
 const INK = '#e23a2c';
 const blank = (w, h) => { const c = document.createElement('canvas'); c.width = Math.ceil(w); c.height = Math.ceil(h); return [c, c.getContext('2d')]; };
-const fitFont = (g, text, family, weight, max, width) => {
-    let size = max;
-    g.font = `${weight} ${size}px ${family}`;
-    while (size > 10 && g.measureText(text).width > width) { size -= 1; g.font = `${weight} ${size}px ${family}`; }
-    return size;
-};
 /* Letters along a circle: on top reading clockwise, or along the bottom reading left to right. */
 const arcText = (g, text, cx, cy, radius, top, spacing = 1) => {
     const chars = [...text];
@@ -235,14 +229,14 @@ const nameStampStyled = (style) => {
         g.font = `400 56px ${BODY}`; g.textAlign = 'center'; g.fillText('★', o, o + 20);
         g.font = `400 22px ${BODY}`; g.fillText('★', o - 96, o + 8); g.fillText('★', o + 96, o + 8);
     } else if (style === 'ticket') {
-        [c, g] = blank(380, 168);
+        // Ticket outline, box-office lettering: ADIT'S / CINEMA stacked, ★ EST. 2023 ★
+        [c, g] = blank(330, 212);
         g.strokeStyle = INK; g.fillStyle = INK;
-        g.lineWidth = 6; ticketPath(g, 8, 8, 364, 152, 18); g.stroke();
-        g.setLineDash([7, 7]); g.lineWidth = 2; ticketPath(g, 22, 22, 336, 124, 12); g.stroke(); g.setLineDash([]);
-        g.font = `800 17px ${BODY}`; spaced(g, 'ADMIT ONE', 190 - 64, 58, 5);
-        const fs = fitFont(g, "ADIT'S CINEMA", SIGN, 400, 48, 300);
-        g.textAlign = 'center'; g.font = `400 ${fs}px ${SIGN}`; g.fillText("ADIT'S CINEMA", 190, 112);
-        g.font = `800 15px ${BODY}`; g.fillText('★  ★  ★', 190, 138);
+        g.lineWidth = 7; ticketPath(g, 8, 8, 314, 196, 20); g.stroke();
+        g.setLineDash([8, 7]); g.lineWidth = 2.5; ticketPath(g, 23, 23, 284, 166, 13); g.stroke(); g.setLineDash([]);
+        g.textAlign = 'center';
+        g.font = `400 54px ${SIGN}`; g.fillText("ADIT'S", 165, 96); g.fillText('CINEMA', 165, 148);
+        g.font = `800 17px ${BODY}`; g.textAlign = 'left'; spaced(g, '★ EST. 2023 ★', 165 - 66, 180, 3);
     } else {
         [c, g] = blank(470, 210);
         const o = 105;
@@ -268,7 +262,7 @@ const nameStampStyled = (style) => {
 };
 
 /* Top: the diary date, small. Each sits on cream paper so it reads on any still. */
-export const DATE_STYLES = ['tag', 'due', 'round'];
+export const DATE_STYLES = ['tag', 'due', 'round', 'stub', 'clapper', 'dater', 'postage'];
 const paperBacked = (ink, pad, shape, shadow = 6) => {
     const [t, g] = blank(ink.width + shadow, ink.height + shadow);
     g.fillStyle = C.edge;
@@ -306,6 +300,87 @@ const dateStampStyled = (style, watched) => {
         g.font = `800 34px ${BODY}`; g.textAlign = 'center'; g.fillText(`${day} ${mon} ${String(yr).slice(2)}`, 98, 74);
         wear(g, c.width, c.height, 170, 13);
         return paperBacked(c, 0, 'rect');
+    }
+    const dd = String(day).padStart(2, '0');
+    if (style === 'stub') {
+        // A tiny ticket, matching the bottom stamp
+        [c, g] = blank(236, 98);
+        g.strokeStyle = INK; g.fillStyle = INK;
+        g.lineWidth = 4; ticketPath(g, 4, 4, 228, 90, 12); g.stroke();
+        g.setLineDash([5, 5]); g.lineWidth = 1.5; ticketPath(g, 14, 14, 208, 70, 8); g.stroke(); g.setLineDash([]);
+        g.textAlign = 'center';
+        g.font = `800 14px ${BODY}`; g.fillText('★ DIARY ★', 118, 38);
+        let fs = 26; g.font = `400 ${fs}px ${SIGN}`;
+        while (g.measureText(`${day} ${mon} ${yr}`).width > 168) { fs -= 1; g.font = `400 ${fs}px ${SIGN}`; }
+        g.fillText(`${day} ${mon} ${yr}`, 118, 70);
+        wear(g, c.width, c.height, 150, 19);
+        const [t, tg] = blank(c.width + 6, c.height + 6);
+        tg.fillStyle = C.edge; ticketPath(tg, 6, 6, 232, 94, 14); tg.fill();
+        tg.fillStyle = C.panel; ticketPath(tg, 0, 0, 232, 94, 14); tg.fill();
+        tg.drawImage(c, 0, 0);
+        return t;
+    }
+    if (style === 'clapper') {
+        // A small film slate: striped clapper bar, SCENE / DIARY, the date on the board
+        const w = 210; const h = 124;
+        const [ink, g2] = blank(w, h);
+        g2.save(); g2.translate(0, 30); g2.rotate((-7 * Math.PI) / 180);
+        g2.fillStyle = INK; g2.fillRect(0, -24, w + 4, 24);
+        g2.globalCompositeOperation = 'destination-out';
+        for (let x = 6; x < w + 10; x += 34) { g2.beginPath(); g2.moveTo(x, -24); g2.lineTo(x + 16, -24); g2.lineTo(x + 4, 0); g2.lineTo(x - 12, 0); g2.closePath(); g2.fill(); }
+        g2.restore(); g2.globalCompositeOperation = 'source-over';
+        g2.fillStyle = INK; g2.strokeStyle = INK;
+        g2.fillRect(0, 32, w, 4); g2.lineWidth = 3; g2.strokeRect(2, 34, w - 4, h - 36);
+        g2.beginPath(); g2.moveTo(2, 68); g2.lineTo(w - 2, 68); g2.stroke();
+        g2.font = `800 13px ${BODY}`; spaced(g2, 'SCENE', 12, 56, 2); spaced(g2, 'DIARY', w - 74, 56, 2);
+        g2.textAlign = 'center'; g2.font = `400 30px ${SIGN}`;
+        g2.fillText(`${dd}·${String(d.getMonth() + 1).padStart(2, '0')}·${String(yr).slice(2)}`, w / 2, 106);
+        wear(g2, w, h, 120, 23);
+        const [t, tg] = blank(w + 6, h + 6);
+        tg.fillStyle = C.edge; tg.fillRect(6, 40, w, h - 34);
+        tg.fillStyle = C.panel; tg.fillRect(0, 34, w, h - 34);
+        tg.save(); tg.translate(0, 30); tg.rotate((-7 * Math.PI) / 180); tg.fillRect(0, -24, w + 4, 24); tg.restore();
+        tg.drawImage(ink, 0, 0);
+        return t;
+    }
+    if (style === 'dater') {
+        // Office date stamper: day | month | year in boxes, DIARY above
+        [c, g] = blank(262, 96);
+        g.strokeStyle = INK; g.fillStyle = INK;
+        g.lineWidth = 4; g.strokeRect(4, 4, 254, 88);
+        g.font = `800 13px ${BODY}`; g.textAlign = 'center'; g.fillText('— DIARY —', 131, 25);
+        const boxes = [[dd, 14, 56], [mon, 78, 76], [String(yr), 162, 86]];
+        g.lineWidth = 2;
+        boxes.forEach(([txt, x, w]) => { g.strokeRect(x, 34, w, 46); g.font = `400 26px ${SIGN}`; g.fillText(txt, x + w / 2, 68); });
+        wear(g, c.width, c.height, 160, 29);
+        return paperBacked(c, 0, 'rect');
+    }
+    if (style === 'postage') {
+        // A little postage stamp with serrated edges
+        const w = 150; const h = 120; const R = 6;
+        [c, g] = blank(w, h);
+        g.fillStyle = C.panel;
+        g.beginPath(); g.rect(0, 0, w, h); g.fill();
+        g.globalCompositeOperation = 'destination-out';
+        const holes = [];
+        for (let x = R; x < w; x += R * 2.4) holes.push([x, 0], [x, h]);
+        for (let y = R; y < h; y += R * 2.4) holes.push([0, y], [w, y]);
+        const paper = g;
+        holes.forEach(([hx, hy]) => { paper.beginPath(); paper.arc(hx, hy, R, 0, Math.PI * 2); paper.fill(); });
+        g.globalCompositeOperation = 'source-over';
+        const [ink, ig] = blank(w, h);
+        ig.strokeStyle = INK; ig.fillStyle = INK;
+        ig.lineWidth = 2.5; ig.strokeRect(14, 14, w - 28, h - 28);
+        ig.textAlign = 'center';
+        ig.font = `800 13px ${BODY}`; ig.fillText('DIARY', w / 2, 38);
+        ig.font = `400 34px ${SIGN}`; ig.fillText(String(day), w / 2, 72);
+        ig.font = `800 15px ${BODY}`; ig.fillText(`${mon} ${yr}`, w / 2, 94);
+        wear(ig, w, h, 120, 31);
+        g.drawImage(ink, 0, 0);
+        const [t, tg] = blank(w + 6, h + 6);
+        tg.globalAlpha = 0.9; tg.drawImage(c, 6, 6); tg.globalCompositeOperation = 'source-in'; tg.fillStyle = C.edge; tg.fillRect(0, 0, w + 6, h + 6);
+        tg.globalCompositeOperation = 'source-over'; tg.globalAlpha = 1; tg.drawImage(c, 0, 0);
+        return t;
     }
     [c, g] = blank(132, 132);
     const o = 66;
